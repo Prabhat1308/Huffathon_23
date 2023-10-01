@@ -1,0 +1,35 @@
+#include './Constants.huff'
+
+#define macro PUT_C1() = takes(0) returns(1){
+    0x04 // [2]
+    0x2B992DDFA2324A14 //[ 3141592653589793300,4]
+    sdiv // [3141592653589793300/4]
+}
+
+#define macro PUT_C2() = takes(0) returns(1){
+    PUT_C1() //[c1]
+    0x03 //[3,c1]
+    mul // [3*c1]
+}
+
+#define macro ABS() = takes(1) returns(1){
+  //Input Stack => [x]
+  0x00 //[0,x]
+  dup2 //[x,0,x]
+  slt // [x<0,x]
+  reverse
+  jumpi
+
+  reverse:
+  dup1 //[x,x]
+  dup1 //[x,x,x]
+  add //[2x,x]
+  swap1 //[x,2x]
+  sub //[-x]
+}
+
+#define macro PUT_X3_CUBE = takes(0) returns(1){
+   0x03 //[2]
+   [X3] //[1e18,3]
+   exp //[1e54]
+}

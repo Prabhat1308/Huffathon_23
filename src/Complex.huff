@@ -1,4 +1,5 @@
 #include './Helper.huff'
+#include './Constants.huff'
 
 #define function addZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
 #define function subZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
@@ -153,16 +154,16 @@
     swap2 // [Re(A),Re(B),Im(A)*Im(B),Re(B)*Im(A)-Re(A)*Im(B),X]
     mul // [Re(A)*Re(B),Im(A)*Im(B),Re(B)*Im(A)-Re(A)*Im(B),X]
     add // [Re(A)*Re(B)+Im(A)*Im(B),Re(B)*Im(A)-Re(A)*Im(B),X] ; Let Re(A)*Re(B)+Im(A)*Im(B) be Y and Re(B)*Im(A)-Re(A)*Im(B) be W
-    0xDE0B6B3A7640000 // [1e18,Y,W,X] 
+    [X3]// [1e18,Y,W,X] 
     mul // [1e18*Y,W,X]
     dup3 // [X,1e18*Y,W,X]
     swap1 // [1e18*Y,X,W,X]
-    div // [1e18*Y/X,W,X]
+    sdiv // [1e18*Y/X,W,X]
     swap2 // [X,W,1e18*Y/X]
     swap1 // [W,X,1e18*Y/X]
-    0xDE0B6B3A7640000 // [1e18,W,X,1e18*Y/X]
+    [X3]// [1e18,W,X,1e18*Y/X]
     mul // [1e18*W,X,1e18*Y/X]
-    div // [1e18*W/X,1e18*Y/X]
+    sdiv // [1e18*W/X,1e18*Y/X]
     swap1 // [1e18*Y/X,1e18*W/X]  
 
 }
@@ -193,12 +194,12 @@
     CALC_R() // [r,Re(a),Im(a)]
     dup1 // [r,r,Re(a),Im(a)]
     0x00 // [0,r,r,Re(a),Im(a)]
-    lt // [0<r,r,Re(a),Im(a)]
+    slt // [0<r,r,Re(a),Im(a)]
     case1
     jumpi
     swap2 //[Im(a),Re(a),r] , r is negative
     P_ATAN2() //[T,r]
-    0x9C2007651B2500000 //[180e18,T,r]
+    [X4] //[180e18,T,r]
     add // [180e18+T,r]
     swap1 //[r,T+180e18]
 
@@ -217,12 +218,13 @@
     //INPUT STACK => [T,r]
     dup1 // [T,T,r]
     0x00 // [0,T,T,r]
-    lt // [0<T,T,r]
+    slt // [0<T,T,r]
     case1
     jumpi
 
     case1: //T is positive
 }
+
 
 
 
