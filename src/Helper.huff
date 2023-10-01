@@ -49,5 +49,56 @@
 
 #define macro P_ATAN2_INNER_CALC() = takes(2) returns(1){
     //Input Stack => [x,y]
-    
+    dup1 // [x,x,y]
+    0x00 // [0,x,x,y]
+    slt // [x<0,x,y]
+    diff_case
+    jumpi
+    swap1 // [y,x]
+    P_ATAN2_ABS() // [abs_y,x]
+    dup2 // [x,abs_y,x]
+    dup2 // [abs_y,x,abs_y,x]
+    sub// [abs_y-x,abs_y,x]
+    swap2 // [x,abs_y,abs_y-x]
+    add // [x+abs_y,abs_y-x]
+    [X3] // [1e18,x+abs_y,abs_y-x]
+    mul // [1e18*(x+abs_y),abs_y-x]
+    sdiv // [(1e18*(x+abs_y))/(abs_y-x)]  , Let (1e18*(x+abs_y))/(abs_y-x) = r
+    P_ATAN2_INNER_T() // [T]
+    PUT_C2() // [c2,T]
+    add // [c2+T]
+
+    diff_case: // [x,y] and x<0 condition
+    swap1 // [y,x]
+    P_ATAN2_ABS() // [abs_y,x]
+    dup2 // [x,abs_y,x]
+    dup2 // [abs_y,x,abs_y,x]
+    add // [abs_y+x,abs_y,x]
+    swap2 // [x,abs_y,abs_y+x]
+    sub // [x-abs_y,abs_y+x]
+    [X3] // [1e18,x-abs_y,abs_y+x]
+    mul // [1e18*(x-abs_y),abs_y+x]
+    sdiv // [(1e18*(x-abs_y))/(abs_y+x)] , Let (1e18*(x+abs_y))/(abs_y-x) = r
+    P_ATAN2_INNER_T() // [T]
+    PUT_C1() // [c1,T]
+    add // [c1+T]
 } 
+
+#define macro P_ATAN2_INNER_T() = takes(1) returns(1){
+  //Input Stack => [r]
+  [X3] // [1e18,r]
+  dup1 // [r,1e18,r]
+  [X2] // [X2,r,1e18,r]
+  mul // [X2*r,1e18,r]
+  sdiv // [(X2*r)/1e18,r]
+  PUT_X3_CUBE() // [1e54,(X2*r)/1e18,r]
+  0x03 // [3,1e54,(X2*r)/1e18,r]
+  dup4 // [r,3,1e54,(X2*r)/1e18,r]
+  exp // [r^3,1e54,(X2*r)/1e18,r]
+  [X1] // [X1,r^3,1e54,(X2*r)/1e18,r]
+  mul // [X1*r^3,1e54,(X2*r)/1e18,r]
+  sdiv // [(X1*r^3)/1e54,(X2*r)/1e18,r]
+  sub // [(X1*r^3)/1e54-(X2*r)/1e18,r]
+  swap1 // [r,(X1*r^3)/1e54-(X2*r)/1e18]
+  pop // [(X1*r^3)/1e54-(X2*r)/1e18]
+}
