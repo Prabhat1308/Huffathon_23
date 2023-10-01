@@ -1,0 +1,76 @@
+#include 'Complex.huff'
+
+#define function addZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
+#define function subZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
+#define function mulZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
+#define function divZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
+#define function calcR(int256 , int 256, int256 , int256) returns (int256 ,int256)
+#define function toPolar(int256 , int 256) returns (int256 ,int256)
+#define function fromPolar(int256 , int 256) returns (int256 ,int256)
+#define function p_atan2(int256 , int 256) returns (int256)
+#define function atan1to1(int256 ) returns (int256)
+#define function ln(int256 , int 256) returns (int256)
+#define function sqrt(int256 , int 256) returns (int256)
+#define function expZ(int256 , int 256) returns (int256 ,int256)
+#define function pow(int256 , int 256 , int256) returns (int256 ,int256)
+
+#define macro MAIN() = takes (0) returns (0) {
+   
+   0x00 calldataload
+   0xE0 shr
+
+   dup1 __FUNC_SIG(addZ) eq addZ jumpi
+   dup1 __FUNC_SIG(subZ) eq subZ jumpi
+   dup1 __FUNC_SIG(mulZ) eq mulZ jumpi
+   dup1 __FUNC_SIG(divZ) eq divZ jumpi
+   dup1 __FUNC_SIG(calcR) eq calcR jumpi
+   dup1 __FUNC_SIG(toPolar) eq toPolar jumpi
+   dup1 __FUNC_SIG(fromPolar) eq fromPolar jumpi
+   dup1 __FUNC_SIG(p_atan2) eq p_atan2 jumpi
+   dup1 __FUNC_SIG(atan1to1) eq atan1to1 jumpi
+   dup1 __FUNC_SIG(ln) eq ln jumpi
+   dup1 __FUNC_SIG(sqrt) eq sqrt jumpi 
+   dup1 __FUNC_SIG(expZ) eq expZ jumpi
+        __FUNC_SIG(pow) eq pow jumpi
+   0x00 0x00 revert
+
+   addZ:
+   ADD_Z()
+
+   subZ:
+   SUB_Z()
+
+    mulZ:
+    MUL_Z()
+
+    divZ:
+    DIV_Z()
+
+    calcR:
+    CALC_R()
+
+    toPolar:
+    TO_POLAR()
+
+    fromPolar:
+    FROM_POLAR()
+
+    p_atan2:
+    P_ATAN2()
+
+    atan1to1:
+    ATAN1TO1()
+
+    ln:
+    LN()
+
+    sqrt:
+    SQRT()
+
+    expZ:
+    EXP_Z()
+
+    pow:
+    POW()
+
+}

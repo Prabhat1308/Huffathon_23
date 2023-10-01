@@ -2,3 +2,7 @@
 #define constant X2 = 0xD9FB2F2E0004000 // 9817e14
 #define constant X3 = 0xDE0B6B3A7640000 // 1e18
 #define constant X4 = 0x9C2007651B2500000 //180e18
+#define constant e = 0x25B946EBC0B36173
+#define constant X5 = 0xAE4E15744AE8000 //7.851e17
+#define constant X6 = 0x365595A8089C000 //2.447e17
+#define constant X7 = 0xEB8B7FAC9BC000 //6.63e16

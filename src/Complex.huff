@@ -1,81 +1,6 @@
 #include './Helper.huff'
 #include './Constants.huff'
 
-#define function addZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
-#define function subZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
-#define function mulZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
-#define function divZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
-#define function calcR(int256 , int 256, int256 , int256) returns (int256 ,int256)
-#define function toPolar(int256 , int 256) returns (int256 ,int256)
-#define function fromPolar(int256 , int 256) returns (int256 ,int256)
-#define function p_atan2(int256 , int 256) returns (int256)
-#define function atan1to1(int256 ) returns (int256)
-#define function ln(int256 , int 256) returns (int256)
-#define function sqrt(int256 , int 256) returns (int256)
-#define function expZ(int256 , int 256) returns (int256 ,int256)
-#define function pow(int256 , int 256 , int256) returns (int256 ,int256)
-
-#define macro MAIN() = takes (0) returns (0) {
-   
-   0x00 calldataload
-   0xE0 shr
-
-   dup1 __FUNC_SIG(addZ) eq addZ jumpi
-   dup1 __FUNC_SIG(subZ) eq subZ jumpi
-   dup1 __FUNC_SIG(mulZ) eq mulZ jumpi
-   dup1 __FUNC_SIG(divZ) eq divZ jumpi
-   dup1 __FUNC_SIG(calcR) eq calcR jumpi
-   dup1 __FUNC_SIG(toPolar) eq toPolar jumpi
-   dup1 __FUNC_SIG(fromPolar) eq fromPolar jumpi
-   dup1 __FUNC_SIG(p_atan2) eq p_atan2 jumpi
-   dup1 __FUNC_SIG(atan1to1) eq atan1to1 jumpi
-   dup1 __FUNC_SIG(ln) eq ln jumpi
-   dup1 __FUNC_SIG(sqrt) eq sqrt jumpi 
-   dup1 __FUNC_SIG(expZ) eq expZ jumpi
-        __FUNC_SIG(pow) eq pow jumpi
-   0x00 0x00 revert
-
-   addZ:
-   ADD_Z()
-
-   subZ:
-   SUB_Z()
-
-    mulZ:
-    MUL_Z()
-
-    divZ:
-    DIV_Z()
-
-    calcR:
-    CALC_R()
-
-    toPolar:
-    TO_POLAR()
-
-    fromPolar:
-    FROM_POLAR()
-
-    p_atan2:
-    P_ATAN2()
-
-    atan1to1:
-    ATAN1TO1()
-
-    ln:
-    LN()
-
-    sqrt:
-    SQRT()
-
-    expZ:
-    EXP_Z()
-
-    pow:
-    POW()
-
-}
-
 // @notice addition
 // a + b
 
@@ -225,6 +150,87 @@
     case1: //T is positive
 }
 
+#define macro P_ATAN2() = takes(2) returns(1) {
+
+}
+
+#define macro ATAN1TO1() = takes(1) returns(1){
+ // INPUT STACK => [x]
+ [X7] // [X7,x]
+ dup1 // [x,X7,x]
+ mul // [x*X7,x]
+ [X3] // [1e18,x*X7,x]
+ swap1 // [x*X7,1e18,x]
+ sdiv // [x*X7/1e18,x]
+ [X6] // [X6,x*X7/1e18,x]
+ add // [X6+x*X7/1e18,x]
+ [X3] //
+ dup3 // [x,1e18,X6+x*X7/1e18,x]
+ sub // [x-1e18,X6+x*X7/1e18,x]
+ dup3 // [x,x-1e18,X6+x*X7/1e18,x]
+ mul // [x*(x-1e18),X6+x*X7/1e18,x]
+ [X3] // [1e18,x*(x-1e18),X6+x*X7/1e18,x]
+ swap1 // [x*(x-1e18),1e18,X6+x*X7/1e18,x]
+ sdiv // [x*(x-1e18)/1e18,X6+x*X7/1e18,x]
+ mul // [(x*(x-1e18)/1e18)*(X6+x*X7/1e18),x]
+ swap1 // [x,(x*(x-1e18)/1e18)*(X6+x*X7/1e18)]
+ [X5] // [X5,x,(x*(x-1e18)/1e18)*(X6+x*X7/1e18)]
+ mul // [X5*x,(x*(x-1e18)/1e18)*(X6+x*X7/1e18)]
+ [X3] // [1e18,X5*x,(x*(x-1e18)/1e18)*(X6+x*X7/1e18)]
+ swap1 // [X5*x,1e18,(x*(x-1e18)/1e18)*(X6+x*X7/1e18)]
+ sdiv // [X5*x/1e18,(x*(x-1e18)/1e18)*(X6+x*X7/1e18)]
+ sub // [X5*x/1e18-(x*(x-1e18)/1e18)*(X6+x*X7/1e18)]
+ [X3] // [1e18,X5*x/1e18-(x*(x-1e18)/1e18)*(X6+x*X7/1e18)]
+ swap1 // [X5*x/1e18-(x*(x-1e18)/1e18)*(X6+x*X7/1e18),1e18]
+ sdiv // [X5*x/1e18-(x*(x-1e18)/1e18)*(X6+x*X7/1e18)/1e18]
+}
+
+#define macro LN() = takes(2) returns(1) {
+   //INPUT STACK => [Re(A),Im(A)]
+   TO_POLAR() // [r,T]
+   
+}
+
+#define macro SQRT() = takes(2) returns(1){
+
+}
+
+#define macro EXP_Z() = takes(2) returns(2) {
+ //INPUT STACK => [Re(A),Im(A)]
+  [e] // [e,Re(A),Im(A)]
+  exp // [e**Re(A),Im(A)]
+  FROM_POLAR()
+
+}
+
+#define macro POW() = takes(3) returns(2) {
+   //INPUT STACK => [Re(a),Im(b),n]
+    TO_POLAR() // [r,T,n]
+    swap1 // [T,r,n]
+    dup3 // [n,T,r,n]
+    mul // [n*T,r,n]
+    [X3] // [1e18,n*T,r,n]
+    swap1 // [n*T,1e18,r,n]
+    sdiv // [n*T/1e18,r,n]
+    swap2 // [n,r,n*T/1e18]
+    swap1 // [r,n,n*T/1e18]
+    exp // [r**n,n*T/1e18] 
+    swap1 // [n*T/1e18,r**n]
+    dup1 // [n*T/1e18,n*T/1e18,r**n] , Let n*T/1e18 = x
+    SIN() // [sin(x),x,r**n]
+    swap1 // [x,sin(x),r**n]
+    COS() // [cos(x),sin(x),r**n]
+    dup3 // [r**n,cos(x),sin(x),r**n]
+    mul // [r**n*cos(x),sin(x),r**n]
+    swap2 
+    mul // [r**n*sin(x),r**n*cos(x)]
+    [X3] // [1e18,r**n*sin(x),r**n*cos(x)]
+    dup1 // [1e18,1e18,r**n*sin(x),r**n*cos(x)]
+    swap2 // 
+    sdiv // [r**n*sin(x)/1e18 , 1e18 , r**n*cos(x)]
+    swap2 
+    sdiv  //[r**n*cos(x)/1e18,r**n*sin(x)/1e18]
+}
 
 
 
