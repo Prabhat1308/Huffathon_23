@@ -1,3 +1,4 @@
+#include './Helper.huff'
 
 #define function addZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
 #define function subZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)

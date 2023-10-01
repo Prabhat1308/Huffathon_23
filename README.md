@@ -1,3 +1,6 @@
+Huff Project to perform Fast Fourier Transform for Huffathon 2023.
+
+
 <img align="right" width="150" height="150" top="100" src="./assets/blueprint.png">
 
 # huff-project-template • [![ci](https://github.com/huff-language/huff-project-template/actions/workflows/ci.yaml/badge.svg)](https://github.com/huff-language/huff-project-template/actions/workflows/ci.yaml) ![license](https://img.shields.io/github/license/huff-language/huff-project-template.svg) ![solidity](https://img.shields.io/badge/solidity-^0.8.15-lightgrey)
