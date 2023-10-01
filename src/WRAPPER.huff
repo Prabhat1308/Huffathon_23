@@ -34,43 +34,172 @@
         __FUNC_SIG(pow) eq pow jumpi
    0x00 0x00 revert
 
-   addZ:
-   ADD_Z()
+    addZ:
+    ADD_Z_LOCAL()
 
-   subZ:
-   SUB_Z()
+    subZ:
+    SUB_Z_LOCAL()
 
     mulZ:
-    MUL_Z()
+    MUL_Z_LOCAL()
 
     divZ:
-    DIV_Z()
+    DIV_Z_LOCAL()
 
     calcR:
-    CALC_R()
+    CALC_R_LOCAL()
 
     toPolar:
-    TO_POLAR()
+    TO_POLAR_LOCAL()
 
     fromPolar:
-    FROM_POLAR()
+    FROM_POLAR_LOCAL()
 
     p_atan2:
-    P_ATAN2()
+    P_ATAN2_LOCAL()
 
     atan1to1:
-    ATAN1TO1()
+    ATAN1TO1_LOCAL()
 
     ln:
-    LN()
+    LN_LOCAL()
 
     sqrt:
-    SQRT()
+    SQRT_LOCAL()
 
     expZ:
-    EXP_Z()
+    EXP_Z_LOCAL()
 
     pow:
-    POW()
+    POW_LOCAL()
 
 }
+
+#define macro ADD_Z_LOCAL() = takes(0) returns(0) {
+    0x04 calldataload
+    0x24 calldataload
+    0x44 calldataload
+    0x64 calldataload
+    ADD_Z() 
+    0x00 mstore
+    0x20 mstore
+
+}
+
+#define macro SUB_Z_LOCAL() = takes(0) returns(0) {
+    0x04 calldataload
+    0x24 calldataload
+    0x44 calldataload
+    0x64 calldataload
+    SUB_Z() 
+    0x00 mstore
+    0x20 mstore
+
+}
+
+#define macro MUL_Z_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    0x44 calldataload
+    0x64 calldataload
+    MUL_Z()
+    0x00 mstore
+    0x20 mstore
+
+}
+
+#define macro DIV_Z_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    0x44 calldataload
+    0x64 calldataload
+    DIV_Z()
+    0x00 mstore
+    0x20 mstore
+
+}
+
+#define macro CALC_R_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    0x44 calldataload
+    0x64 calldataload
+    CALC_R()
+    0x00 mstore
+    0x20 mstore
+
+}
+
+#define macro TO_POLAR_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    TO_POLAR()
+    0x00 mstore
+    0x20 mstore
+
+}
+
+#define macro FROM_POLAR_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    FROM_POLAR()
+    0x00 mstore
+    0x20 mstore
+
+}
+
+#define macro P_ATAN2_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    P_ATAN2()
+    0x00 mstore
+    
+
+}
+
+#define macro ATAN1TO1_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    ATAN1TO1()
+    0x00 mstore
+    
+
+}
+
+#define macro LN_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    LN()
+    0x00 mstore
+   
+
+}
+
+#define macro SQRT_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    SQRT()
+    0x00 mstore
+    
+
+}
+
+#define macro EXP_Z_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    EXP_Z()
+    0x00 mstore
+    0x20 mstore
+
+}
+
+#define macro POW_LOCAL() = takes(0) returns(0){
+    0x04 calldataload
+    0x24 calldataload
+    0x44 calldataload
+    POW()
+    0x00 mstore
+    0x20 mstore
+
+}
+
+
