@@ -1,7 +1,7 @@
 #include './Helper.huff'
 #include './Constants.huff'
 
-// @notice addition
+/// @notice addition
 // a + b
 
 #define macro ADD_Z() = takes(4) returns(2) {
@@ -14,7 +14,7 @@
 
 }
 
-// @notice subtraction 
+/// @notice subtraction 
 // a - b
 
 #define macro SUB_Z() = takes(4) returns(2) {
@@ -27,7 +27,7 @@
 
 }
 
-// @notice multiplication
+/// @notice multiplication
 // a * b
 
 #define macro MUL_Z() = takes(4) returns(2){
@@ -49,7 +49,7 @@
     
 }
 
-// @notice division
+/// @notice division
 // a / b
 
 #define macro DIV_Z() = takes(4) returns(2) {
@@ -94,7 +94,7 @@
 }
 
 
-// @notice
+/// @notice
 // a**2 + b**2 = r**2
 // a and b are int
 // return r
@@ -109,7 +109,7 @@
     SQRT()
 }
 
-// @notice
+/// @notice
 //cartesian to polar 
 
 #define macro TO_POLAR() = takes(2) returns(2) {
@@ -136,7 +136,7 @@
 
 }
 
-// @notice
+/// @notice
 // polar to cartesian
 
 #define macro FROM_POLAR() = takes(2) returns(2) {
@@ -144,14 +144,61 @@
     dup1 // [T,T,r]
     0x00 // [0,T,T,r]
     slt // [0<T,T,r]
-    case1
+    case2
     jumpi
+    dup2 // [r,T,r]
+    dup2 // [T,r,T,r]
+    PUT_NEG1() // [-1,T,r,T,r]
+    mul // [-1T,r,T,r]
+    SIN() // [sin(-T),r,T,r]
+    mul // [sin(-T)*r,T,r]
+    PUT_NEG1() // [-1,sin(-T)*r,T,r]
+    mul // [-sin(-T)*r,T,r]
+    [X3] // [1e18,-sin(-T)*r,T,r]
+    swap1 // [-sin(-T)*r,1e18,T,r]
+    sdiv // [-sin(-T)*r/1e18,T,r]
+    swap1 // [T,-sin(-T)*r/1e18,r]
+    COS() // [cos(T),-sin(-T)*r/1e18,r]
+    swap1 
+    swap2 // [r,cos(T),-sin(-T)*r/1e18]
+    mul // [r*cos(T),-sin(-T)*r/1e18]
+    [X3] // [1e18,r*cos(T),-sin(-T)*r/1e18]
+    swap1 // [r*cos(T),1e18,-sin(-T)*r/1e18]]
+    sdiv // [r*cos(T),1e18,-sin(-T)*r/1e18]
 
-    case1: //T is positive
+    case2: //T is positive
+    dup2 // [r,T,r]
+    dup2 // [T,r,T,r]
+    SIN() // [sin(T),r,T,r]
+    mul // [sin(T)*r,T,r]
+    [X3] // [1e18,sin(T)*r,T,r]
+    swap1 // [sin(T)*r,1e18,T,r]
+    sdiv // [sin(T)*r/1e18,T,r]
+    swap1 // [T,sin(T)*r/1e18,r]
+    COS() // [cos(T),sin(T)*r/1e18,r]
+    swap1 
+    swap2 // [r,cos(T),sin(T)*r/1e18]
+    mul // [r*cos(T),sin(T)*r/1e18]
+    [X3] // [1e18,r*cos(T),sin(T)*r/1e18]
+    swap1 // [r*cos(T),1e18,sin(T)*r/1e18]]
+    sdiv // [r*cos(T),1e18,sin(T)*r/1e18]
 }
 
 #define macro P_ATAN2() = takes(2) returns(1) {
+   // INPUT STACK => [y,x]
+   dup1 // [y,y,x]
+   swap2 // [x,y,y]
+   P_ATAN2_INNER_CALC() // [T,y]
+   swap1 // [y,T]
+   0x00 // [0,y,T]
+   sgt // [0>y,T]
+   case3
+   jumpi 
 
+   case3:
+   PUT_NEG1() // [-1,T]
+   mul // [-T] 
+   
 }
 
 #define macro ATAN1TO1() = takes(1) returns(1){
@@ -195,6 +242,8 @@
 
 }
 
+///@notice e^(a+bi) calculation
+
 #define macro EXP_Z() = takes(2) returns(2) {
  //INPUT STACK => [Re(A),Im(A)]
   [e] // [e,Re(A),Im(A)]
@@ -202,6 +251,8 @@
   FROM_POLAR()
 
 }
+
+///@notice power of complex numbers
 
 #define macro POW() = takes(3) returns(2) {
    //INPUT STACK => [Re(a),Im(b),n]

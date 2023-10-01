@@ -6,3 +6,4 @@
 #define constant X5 = 0xAE4E15744AE8000 //7.851e17
 #define constant X6 = 0x365595A8089C000 //2.447e17
 #define constant X7 = 0xEB8B7FAC9BC000 //6.63e16
+#define constant X8 = 0x5F5E100 //1e8
