@@ -1,0 +1,227 @@
+
+#define function addZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
+#define function subZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
+#define function mulZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
+#define function divZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
+#define function calcR(int256 , int 256, int256 , int256) returns (int256 ,int256)
+#define function toPolar(int256 , int 256) returns (int256 ,int256)
+#define function fromPolar(int256 , int 256) returns (int256 ,int256)
+#define function p_atan2(int256 , int 256) returns (int256)
+#define function atan1to1(int256 ) returns (int256)
+#define function ln(int256 , int 256) returns (int256)
+#define function sqrt(int256 , int 256) returns (int256)
+#define function expZ(int256 , int 256) returns (int256 ,int256)
+#define function pow(int256 , int 256 , int256) returns (int256 ,int256)
+
+#define macro MAIN() = takes (0) returns (0) {
+   
+   0x00 calldataload
+   0xE0 shr
+
+   dup1 __FUNC_SIG(addZ) eq addZ jumpi
+   dup1 __FUNC_SIG(subZ) eq subZ jumpi
+   dup1 __FUNC_SIG(mulZ) eq mulZ jumpi
+   dup1 __FUNC_SIG(divZ) eq divZ jumpi
+   dup1 __FUNC_SIG(calcR) eq calcR jumpi
+   dup1 __FUNC_SIG(toPolar) eq toPolar jumpi
+   dup1 __FUNC_SIG(fromPolar) eq fromPolar jumpi
+   dup1 __FUNC_SIG(p_atan2) eq p_atan2 jumpi
+   dup1 __FUNC_SIG(atan1to1) eq atan1to1 jumpi
+   dup1 __FUNC_SIG(ln) eq ln jumpi
+   dup1 __FUNC_SIG(sqrt) eq sqrt jumpi 
+   dup1 __FUNC_SIG(expZ) eq expZ jumpi
+        __FUNC_SIG(pow) eq pow jumpi
+   0x00 0x00 revert
+
+   addZ:
+   ADD_Z()
+
+   subZ:
+   SUB_Z()
+
+    mulZ:
+    MUL_Z()
+
+    divZ:
+    DIV_Z()
+
+    calcR:
+    CALC_R()
+
+    toPolar:
+    TO_POLAR()
+
+    fromPolar:
+    FROM_POLAR()
+
+    p_atan2:
+    P_ATAN2()
+
+    atan1to1:
+    ATAN1TO1()
+
+    ln:
+    LN()
+
+    sqrt:
+    SQRT()
+
+    expZ:
+    EXP_Z()
+
+    pow:
+    POW()
+
+}
+
+// @notice addition
+// a + b
+
+#define macro ADD_Z() = takes(4) returns(2) {
+    //INPUT STACK => [RE(a),RE(b),IM(a),IM(b)]
+
+    add // [Re(A)+Re(B),Im(A),Im(B)]
+    swap2 // [Im(B),Im(A),Re(A)+Re(B)]
+    add // [Im(B)+Im(A),Re(A)+Re(B)]
+    swap1 // [Re(A)+Re(B),Im(B)+Im(A)]
+
+}
+
+// @notice subtraction 
+// a - b
+
+#define macro SUB_Z() = takes(4) returns(2) {
+    //INPUT STACK => [RE(a),RE(b),IM(a),IM(b)]
+    sub // [Re(A)-Re(B),Im(A),Im(B)]
+    swap2 // [Im(B),Im(A),Re(A)-Re(B)]
+    swap1 // [Im(A),Im(B),Re(A)-Re(B)] 
+    sub // [Im(A)-Im(B),Re(A)-Re(B)]
+    swap1 // [Re(A)-Re(B),Im(A)-Im(B)]
+
+}
+
+// @notice multiplication
+// a * b
+
+#define macro MUL_Z() = takes(4) returns(2){
+    //INPUT STACK => [RE(a),RE(b),IM(a),IM(b)]
+    dup1 // [Re(A),Re(A),Re(B),Im(A),Im(B)]
+    dup5 // [Im(B),Re(A),Re(A),Re(B),Im(A),Im(B)]
+    mul // [Re(A)*Im(B),Re(A),Re(B),Im(A),Im(B)]
+    dup3 // [Re(B),Re(A)*Im(B),Re(A),Re(B),Im(A),Im(B)]
+    dup5 // [Im(A),Re(B),Re(A)*Im(B),Re(A),Re(B),Im(A),Im(B)]
+    mul // [Re(B)*Im(A),Re(A)*Im(B),Re(A),Re(B),Im(A),Im(B)]
+    add // [Re(A)*Im(B)+Re(B)*Im(A) ,Re(A) ,Re(B) ,Im(A) ,Im(B) ]
+    swap4 // [Im(B) , Re(A) ,Re(B) ,Im(A) ,Re(A)*Im(B)+Re(B)*Im(A)]
+    swap1 // [Re(A),Im(B),Re(B),Im(A),Re(A)*Im(B)+Re(B)*Im(A)]
+    swap3 // [Im(A),Im(B),Re(B),Re(A),Re(A)*Im(B)+Re(B)*Im(A)]
+    mul // [Im(A)*Im(B),Re(B),Re(A),Re(A)*Im(B)+Re(B)*Im(A)]
+    swap2 // [Re(A),Re(B),Im(A)*Im(B),Re(A)*Im(B)+Re(B)*Im(A)]
+    mul // [Re(A)*Re(B),Im(A)*Im(B),Re(A)*Im(B)+Re(B)*Im(A)]
+    sub // [Re(A)*Re(B)-Im(A)*Im(B),Re(A)*Im(B)+Re(B)*Im(A)]
+    
+}
+
+// @notice division
+// a / b
+
+#define macro DIV_Z() = takes(4) returns(2) {
+    //INPUT STACK => [RE(a),RE(b),IM(a),IM(b)]
+    0x02 // [2,Re(A),Re(B),Im(A),Im(B)]
+    dup2 // [Re(B),2,Re(A),Re(B),Im(A),Im(B)]
+    exp // [Re(B)**2 ,Re(A),Re(B),Im(A),Im(B)]
+    0x02 // [2,Re(B)**2 ,Re(A),Re(B),Im(A),Im(B)]
+    dup5 // [Im(B),2,Re(B)**2,Re(A),Re(B),Im(A),Im(B)]
+    exp // [Im(B)**2,Re(B)**2,Re(A),Re(B),Im(A),Im(B)]
+    add // [Im(B)**2+Re(B)**2,Re(A),Re(B),Im(A),Im(B)] , Let Im(B)**2+Re(B)**2 be X
+    swap4 // [Im(B),Re(A),Re(B),Im(A),X]
+    swap3 // [Im(A),Re(A),Re(B),Im(B),X]
+    swap2 // [Re(B),Re(A),Im(A),Im(B),X]
+    swap1 // [Re(A),Re(B),Im(A),Im(B),X]
+    dup1 // [Re(A),Re(A),Re(B),Im(A),Im(B),X]
+    dup5 // [Im(B),Re(A),Re(A),Re(B),Im(A),Im(B),X]
+    mul // [Re(A)*Im(B),Re(A),Re(B),Im(A),Im(B),X]
+    dup3 // [Re(B),Re(A)*Im(B),Re(A),Re(B),Im(A),Im(B),X]
+    dup5 // [Im(A),Re(B),Re(A)*Im(B),Re(A),Re(B),Im(A),Im(B),X]
+    mul // [Re(B)*Im(A),Re(A)*Im(B),Re(A),Re(B),Im(A),Im(B),X]
+    sub // [Re(B)*Im(A)-Re(A)*Im(B),Re(A) ,Re(B) ,Im(A) ,Im(B),X ]
+    swap4 // [Im(B) , Re(A) ,Re(B) ,Im(A) ,Re(B)*Im(A)-Re(A)*Im(B),X]
+    swap1 // [Re(A),Im(B),Re(B),Im(A),Re(B)*Im(A)-Re(A)*Im(B),X]
+    swap3 // [Im(A),Im(B),Re(B),Re(A),Re(B)*Im(A)-Re(A)*Im(B),X]
+    mul // [Im(A)*Im(B),Re(B),Re(A),Re(B)*Im(A)-Re(A)*Im(B),X]
+    swap2 // [Re(A),Re(B),Im(A)*Im(B),Re(B)*Im(A)-Re(A)*Im(B),X]
+    mul // [Re(A)*Re(B),Im(A)*Im(B),Re(B)*Im(A)-Re(A)*Im(B),X]
+    add // [Re(A)*Re(B)+Im(A)*Im(B),Re(B)*Im(A)-Re(A)*Im(B),X] ; Let Re(A)*Re(B)+Im(A)*Im(B) be Y and Re(B)*Im(A)-Re(A)*Im(B) be W
+    0xDE0B6B3A7640000 // [1e18,Y,W,X] 
+    mul // [1e18*Y,W,X]
+    dup3 // [X,1e18*Y,W,X]
+    swap1 // [1e18*Y,X,W,X]
+    div // [1e18*Y/X,W,X]
+    swap2 // [X,W,1e18*Y/X]
+    swap1 // [W,X,1e18*Y/X]
+    0xDE0B6B3A7640000 // [1e18,W,X,1e18*Y/X]
+    mul // [1e18*W,X,1e18*Y/X]
+    div // [1e18*W/X,1e18*Y/X]
+    swap1 // [1e18*Y/X,1e18*W/X]  
+
+}
+
+
+// @notice
+// a**2 + b**2 = r**2
+// a and b are int
+// return r
+#define macro CALC_R() = takes(2) returns(1) {
+    // INPUT STACK => [a,b] 
+    dup1
+    mul 
+    swap1
+    dup1
+    mul
+    swap1
+    SQRT()
+}
+
+// @notice
+//cartesian to polar 
+
+#define macro TO_POLAR() = takes(2) returns(2) {
+    // INPUT STACK => [RE(a),IM(a)]
+    dup2 // [Im(a),Re(a),Im(a)]
+    dup2 // [Re(a),Im(a),Re(a),Im(a)]
+    CALC_R() // [r,Re(a),Im(a)]
+    dup1 // [r,r,Re(a),Im(a)]
+    0x00 // [0,r,r,Re(a),Im(a)]
+    lt // [0<r,r,Re(a),Im(a)]
+    case1
+    jumpi
+    swap2 //[Im(a),Re(a),r] , r is negative
+    P_ATAN2() //[T,r]
+    0x9C2007651B2500000 //[180e18,T,r]
+    add // [180e18+T,r]
+    swap1 //[r,T+180e18]
+
+    case1: // r is positive
+
+    swap2 //[Im(a),Re(a),r]
+    P_ATAN2() //[T,r]
+    swap1 //[r,T]
+
+}
+
+// @notice
+// polar to cartesian
+
+#define macro FROM_POLAR() = takes(2) returns(2) {
+    //INPUT STACK => [T,r]
+    dup1 // [T,T,r]
+    0x00 // [0,T,T,r]
+    lt // [0<T,T,r]
+    case1
+    jumpi
+
+    case1: //T is positive
+}
+
+
+
