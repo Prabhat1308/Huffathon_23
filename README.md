@@ -38,7 +38,7 @@ cd(0, 0), cd(1, 1), cd(3, 3), cd(4, 4), cd(4, 4), cd(3, 3), cd(1, 1), cd(0, 0)
 For these points the following output is observed whcih represents the amplitude of the corresponding frequency buckets. 
 
 ```
-(16,16) (-11.6569,-4.82843) (0,0) (0.828427,-0.343146) (0,0) (-0.343146,0.828427) (0,0) (-4.82843,-11.6569)
+(16,16) (-4.82843,-11.6569) (0,0) (-0.343146,0.828427) (0,0) (0.828427,-0.343146) (0,0) (-11.6569,-4.82843)
 ```
 
 which is the correct output as seen in this matplotlib plot as shown here 
