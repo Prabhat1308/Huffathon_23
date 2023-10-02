@@ -83,7 +83,7 @@
     ADD_Z() 
     0x00 mstore
     0x20 mstore
-
+    0x20 0x00 return
 }
 
 #define macro SUB_Z_LOCAL() = takes(0) returns(0) {
@@ -94,7 +94,7 @@
     SUB_Z() 
     0x00 mstore
     0x20 mstore
-
+    0x20 0x00 return
 }
 
 #define macro MUL_Z_LOCAL() = takes(0) returns(0){
@@ -105,7 +105,7 @@
     MUL_Z()
     0x00 mstore
     0x20 mstore
-
+    0x20 0x00 return
 }
 
 #define macro DIV_Z_LOCAL() = takes(0) returns(0){
@@ -116,7 +116,7 @@
     DIV_Z()
     0x00 mstore
     0x20 mstore
-
+    0x20 0x00 return
 }
 
 #define macro CALC_R_LOCAL() = takes(0) returns(0){
@@ -127,7 +127,7 @@
     CALC_R()
     0x00 mstore
     0x20 mstore
-
+    0x20 0x00 return
 }
 
 #define macro TO_POLAR_LOCAL() = takes(0) returns(0){
@@ -136,7 +136,7 @@
     TO_POLAR()
     0x00 mstore
     0x20 mstore
-
+    0x20 0x00 return
 }
 
 #define macro FROM_POLAR_LOCAL() = takes(0) returns(0){
@@ -145,7 +145,7 @@
     FROM_POLAR()
     0x00 mstore
     0x20 mstore
-
+    0x20 0x00 return
 }
 
 #define macro P_ATAN2_LOCAL() = takes(0) returns(0){
@@ -153,7 +153,7 @@
     0x24 calldataload
     P_ATAN2()
     0x00 mstore
-    
+    0x20 0x00 return
 
 }
 
@@ -161,7 +161,7 @@
     0x04 calldataload
     ATAN1TO1()
     0x00 mstore
-    
+    0x20 0x00 return
 
 }
 
@@ -170,7 +170,7 @@
     0x24 calldataload
     LN()
     0x00 mstore
-   
+    0x20 0x00 return
 
 }
 
@@ -179,7 +179,7 @@
     0x24 calldataload
     SQRT()
     0x00 mstore
-    
+    0x20 0x00 return
 
 }
 
@@ -189,7 +189,7 @@
     EXP_Z()
     0x00 mstore
     0x20 mstore
-
+    0x20 0x00 return
 }
 
 #define macro POW_LOCAL() = takes(0) returns(0){
@@ -199,7 +199,7 @@
     POW()
     0x00 mstore
     0x20 mstore
-
+    0x20 0x00 return
 }
 
 
