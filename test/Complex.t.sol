@@ -7,16 +7,57 @@ import "forge-std/console.sol";
 
 contract ComplexTest is Test {
     Complex public complex;
+    int scale = 10e18;
 
     function setUp() public {
-        address com = HuffDeployer.deploy("./ComplexHuff/WRAPPER");
+        address com = HuffDeployer.config().deploy("ComplexHuff/Complex");
         complex = Complex(com);
     }
 
+    // input re(a), re(b), im(a), im(b)
+    // most gas efficient permutation
     function testAddZ() public {
-        (int256 r, int256 i) = complex.addZ(1, 2, 3, 4);
-        assertEq(r, 3);
-        assertEq(i, 7);
+        (int256 r, int256 i) = complex.addZ(
+            int(1) * scale,
+            int(2) * scale,
+            int(3) * scale,
+            int(4) * scale
+        );
+        assertEq(r / scale, 3);
+        assertEq(i / scale, 7);
+    }
+
+    function testSubZ() public {
+        (int256 r, int256 i) = complex.subZ(
+            3 * scale,
+            2 * scale,
+            5 * scale,
+            1 * scale
+        );
+        assertEq(r / scale, 1);
+        assertEq(i / scale, 4);
+    }
+
+    function testMulZ() public {
+        (int256 r, int256 i) = complex.addZ(
+            1 * scale,
+            3 * scale,
+            1 * scale,
+            2 * scale
+        );
+        assertEq(r / scale, 1);
+        assertEq(i / scale, 5);
+    }
+
+    function testDivZ() public {
+        (int256 r, int256 i) = complex.divZ(7, 1, 5, 2);
+        assertEq((r * 10) / scale, 34); // 17/5
+        assertEq((i * 10) / scale, -16); // -8/5
+    }
+
+    function testCalcR() public {
+        uint r = complex.calcR(3 * scale, 4 * scale);
+        assertEq(r / uint(scale), 5);
     }
 }
 
@@ -49,12 +90,7 @@ interface Complex {
         int256
     ) external returns (int256, int256);
 
-    function calcR(
-        int256,
-        int256,
-        int256,
-        int256
-    ) external returns (int256, int256);
+    function calcR(int256, int256) external returns (uint256);
 
     function toPolar(int256, int256) external returns (int256, int256);
 

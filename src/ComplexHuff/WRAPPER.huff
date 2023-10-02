@@ -4,7 +4,7 @@
 #define function subZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
 #define function mulZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
 #define function divZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
-#define function calcR(int256 , int256, int256 , int256) returns (int256 ,int256)
+#define function calcR(int256 , int256) returns (int256 ,int256)
 #define function toPolar(int256 , int256) returns (int256 ,int256)
 #define function fromPolar(int256 , int256) returns (int256 ,int256)
 #define function p_atan2(int256 , int256) returns (int256)
