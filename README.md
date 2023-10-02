@@ -57,6 +57,8 @@ and the result is shown here
 
 which is the correct result !
 
+Here is its implementation by one of our team members --> https://github.com/0xpanicError/solidityFFT
+
 ### Credits
 
 This Project was made by three University Students
