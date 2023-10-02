@@ -1,0 +1,75 @@
+#import './PRBMathHelper.huff'
+
+#define macro SQRT_PRB() = takes(1) returns(1){
+ //Input Stack = [x]
+   dup1 // [x,x]
+   iszero // [x==0?,x]
+   jumpi
+   zero_found 
+   [X3] // [1e18,x]
+   mul // [1e18*x] 
+   dup1 // [1e18*x,1e18*x]
+   0x01 // [1,1e18*x,1e18*x]
+   GATE1()
+   GATE2()
+   GATE3()
+   GATE4()
+   GATE5()
+   GATE6()
+   GATE7() // [result,xnum,x'] 
+   swap1 // [xnum,result,x']
+   pop  // [result,x']
+   0x00 // [0,result,x']
+   loop 
+   jump 
+   
+   loop: // [i,result,x']
+   0x01 // [1,i,result,x']
+   add // [i+1,result,x']
+   swap1 // [result,i+1,x']
+   dup1 // [result,result,i+1,x']
+   dup4 // [x',result,result,i+1,x']
+   add // [x'+result,result,i+1,x']
+   div // [(x'+result)/result,i+1,x'] , Let (x'+result)/result = result 
+   dup2 // [i+1,result,i+1,x']
+   0x07 // [7,i+1,result,i+1,x']
+   eq // [i+1==7?,result,i+1,x']
+   done
+   jumpi
+   loop
+   jump 
+   
+   done: // [result,i+1,x']
+   swap1 // [i+1,result,x']
+   pop // [result,x']
+   dup1 // [result,result,x']
+   swap2 // [x',result,result]
+   div // [x'/result,result]
+   dup1 // [x'/result,x'/result,result]
+   dup3 // [result,x'/result,x'/result,result]
+   lt // [result < x'/result,x'/result,result]
+   iszero 
+   final
+   jumpi
+   pop
+
+   final: // [x'/result,result]
+   swap1 // [result,x'/result]
+   pop // [x'/result]
+
+   zero_found: //[x]
+   pop // []
+   0x00 // [0]
+
+}
+
+#define macro LOGE_PRB() = takes(1) returns(1) {
+    //Input stack => [x]
+    LOG2() // [log2(x)]
+    [X3] // [1e18,log2(x)]
+    mul // [1e18*log2(x)]
+    [LOG2_E] // [Log2(e),1e18*log2(x)]
+    swap1 // [1e18*log2(x),Log2(e)]
+    sdiv // [1e18*log2(x)/Log2(e)]
+}
+

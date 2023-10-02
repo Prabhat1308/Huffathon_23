@@ -235,7 +235,7 @@
 #define macro LN() = takes(2) returns(1) {
    //INPUT STACK => [Re(A),Im(A)]
    TO_POLAR() // [r,T]
-   
+   LOGE_PRB() // [ln(r),T]
 }
 
 #define macro SQRT() = takes(2) returns(1){

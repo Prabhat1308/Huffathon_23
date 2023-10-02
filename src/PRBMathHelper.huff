@@ -1,0 +1,116 @@
+
+#define macro GATE1() = takes(0) returns(0) {
+    //Input Stack [result,xn,x] 
+    dup2 // [xn,result,xn,x] 
+    0x100000000000000000000000000000000 // [0x100000000000000000000000000000000,xn,result,xn,x]
+    gt // [0x100000000000000000000000000000000>xn,result,xn,x]
+    iszero
+    satisfied
+    jumpi 
+
+    satisfied:
+    64 shl // [result<<64,xn,x]
+    swap1 // [xn,result<<64,x]
+    128 shr // [xn >> 128,result<<64,x]
+    swap1 // [result<<64,xn >> 128]
+} 
+
+#define macro GATE2() = takes(0) returns(0) {
+    //Input Stack [result,xn,x] 
+    dup2 // [xn,result,xn,x] 
+    0x10000000000000000 // [0x10000000000000000,xn,result,xn,x]
+    gt // [0x10000000000000000>xn,result,xn,x]
+    iszero
+    satisfied
+    jumpi 
+
+    satisfied:
+    32 shl // [result<<32,xn,x]
+    swap1 // [xn,result<<32,x]
+    64 shr // [xn >> 64,result<<32,x]
+    swap1 // [result<<32,xn>>64,x]
+} 
+
+#define macro GATE3() = takes(0) returns(0) {
+    //Input Stack [result,xn,x] 
+    dup2 // [xn,result,xn,x] 
+    0x100000000 // [0x100000000,xn,result,xn,x]
+    gt // [0x100000000>xn,result,xn,x]
+    iszero
+    satisfied
+    jumpi 
+
+    satisfied:
+    16 shl // [result<<16,xn,x]
+    swap1 // [xn,result<<16,x]
+    32 shr // [xn >> 32,result<<16,x]
+    swap1 // [result<<16,xn >> 32,x]
+} 
+
+#define macro GATE4() = takes(0) returns(0) {
+    //Input Stack [result,xn,x] 
+    dup2 // [xn,result,xn,x] 
+    0x10000 // [0x10000,xn,result,xn,x]
+    gt // [0x10000>xn,result,xn,x]
+    iszero
+    satisfied
+    jumpi 
+
+    satisfied:
+    8 shl // [result<<8,xn,x]
+    swap1 // [xn,result<<8,x]
+    16 shr // [xn >> 16,result<<8,x]
+    swap1 // [result<<16,xn >> 8]
+} 
+
+#define macro GATE5() = takes(0) returns(0) {
+    //Input Stack [result,xn,x] 
+    dup2 // [xn,result,xn,x] 
+    0x100 // [0x100,xn,result,xn,x]
+    gt // [0x100>xn,result,xn,x]
+    iszero
+    satisfied
+    jumpi 
+
+    satisfied:
+    4 shl // [result<<4,xn,x]
+    swap1 // [xn,result<<4,x]
+    8 shr // [xn >> 8,result<<4,x]
+    swap1 // [result<<4,xn >>8]
+} 
+#define macro GATE6() = takes(0) returns(0) {
+    //Input Stack [result,xn,x] 
+    dup2 // [xn,result,xn,x] 
+    0x10 // [0x10,xn,result,xn,x]
+    gt // [0x10>xn,result,xn,x]
+    iszero
+    satisfied
+    jumpi 
+
+    satisfied:
+    2 shl // [result<<2,xn,x]
+    swap1 // [xn,result<<2,x]
+    4 shr // [xn >> 4,result<<2,x]
+    swap1 // [result<<2,xn >>4]
+} 
+
+#define macro GATE7() = takes(0) returns(0) {
+    //Input Stack [result,xn,x] 
+    dup2 // [xn,result,xn,x] 
+    0x4 // [0x4,xn,result,xn,x]
+    gt // [0x4>xn,result,xn,x]
+    iszero
+    satisfied
+    jumpi 
+
+    satisfied:
+    1 shl // [result<<1,xn,x]
+} 
+
+#define macro LOG2() = takes(0) returns(0) {
+
+}
+
+#define macro MOST_SIGNIFICANT_BIT() = takes(0) returns(0) {
+    // Input Stack => [x]
+}
