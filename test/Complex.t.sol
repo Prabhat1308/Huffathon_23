@@ -50,7 +50,12 @@ contract ComplexTest is Test {
     }
 
     function testDivZ() public {
-        (int256 r, int256 i) = complex.divZ(7, 1, 5, 2);
+        (int256 r, int256 i) = complex.divZ(
+            7 * scale,
+            1 * scale,
+            5 * scale,
+            2 * scale
+        );
         assertEq((r * 10) / scale, 34); // 17/5
         assertEq((i * 10) / scale, -16); // -8/5
     }
@@ -58,6 +63,10 @@ contract ComplexTest is Test {
     function testCalcR() public {
         uint r = complex.calcR(3 * scale, 4 * scale);
         assertEq(r / uint(scale), 5);
+    }
+
+    function testToPolar() public {
+        (int r, int t) = complex.toPolar(3, 4);
     }
 }
 

@@ -20,9 +20,9 @@ contract FFT {
     }
 
     function fft(
-        int[] memory real_part,
-        int[] memory complex_part
-    ) public view returns (int[] memory, int[] memory) {
+        int[4] memory real_part,
+        int[4] memory complex_part
+    ) public view returns (int[4] memory, int[4] memory) {
         uint256 N = real_part.length;
         uint256 k = N;
         uint256 n;
