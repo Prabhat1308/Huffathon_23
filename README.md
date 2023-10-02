@@ -1,87 +1,66 @@
-Huff Project to perform Fast Fourier Transform for Huffathon 2023.
+# HorseRiders 🏇🏇🏇
+### Fast Fourier Transformation Implementation and a Complex Maths Library written in Huff
 
+HorseRiders is a complex math library implemenation written in huff. It includes 
 
-<img align="right" width="150" height="150" top="100" src="./assets/blueprint.png">
+1. Fast Fourier Transform
+2. Complex Numbers Math Library
+3. Implementation of PRBMath in huff
 
-# huff-project-template • [![ci](https://github.com/huff-language/huff-project-template/actions/workflows/ci.yaml/badge.svg)](https://github.com/huff-language/huff-project-template/actions/workflows/ci.yaml) ![license](https://img.shields.io/github/license/huff-language/huff-project-template.svg) ![solidity](https://img.shields.io/badge/solidity-^0.8.15-lightgrey)
+Fast Fourier Transform is an algorithm to calcualte the discrete fourier transform of a given set of inputs. It computes the output in O(nlogn) time complexity instead of n^2 which is the case with DFT.
 
-Versatile Huff Project Template using Foundry.
+In this Library you can find the following functions : 
 
-
-## Getting Started
-
-### Requirements
-
-The following will need to be installed in order to use this template. Please follow the links and instructions.
-
--   [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)  
-    -   You'll know you've done it right if you can run `git --version`
--   [Foundry / Foundryup](https://github.com/gakonst/foundry)
-    -   This will install `forge`, `cast`, and `anvil`
-    -   You can test you've installed them right by running `forge --version` and get an output like: `forge 0.2.0 (92f8951 2022-08-06T00:09:32.96582Z)`
-    -   To get the latest of each, just run `foundryup`
--   [Huff Compiler](https://docs.huff.sh/get-started/installing/)
-    -   You'll know you've done it right if you can run `huffc --version` and get an output like: `huffc 0.3.0`
-
-### Quickstart
-
-1. Clone this repo or use template
-
-Click "Use this template" on [GitHub](https://github.com/huff-language/huff-project-template) to create a new repository with this repo as the initial state.
-
-Or run:
-
-```
-git clone https://github.com/huff-language/huff-project-template
-cd huff-project-template
+```s
+addZ --> Addition Operation
+subZ --> Subtraction Operation
+mulZ --> Multiplication Operation
+divZ --> Division Operation
+calcR --> Amplitude of a complex number
+toPolar --> convert cartisian into Polar 
+fromPolar --> Convert Polar to cartesian
+p_atan2 --> Calculate arctan(x/y)
+atan1to1 --> calculate arctan(x/y) in a gas efficient way in the range of -1 to 1
+ln --> calculate natural logarithm 
+sqrt --> calculate sqrt of complex number
+expZ --> calculate exponential of complex number
+pow --> calculate complex number raised to some power
 ```
 
-2. Install dependencies
+## Example
 
-Once you've cloned and entered into your repository, you need to install the necessary dependencies. In order to do so, simply run:
+Let us the take the following sample points
 
-```shell
-forge install
+```cpp
+cd(0, 0), cd(1, 1), cd(3, 3), cd(4, 4), cd(4, 4), cd(3, 3), cd(1, 1), cd(0, 0)
 ```
 
-3. Build & Test
+For these points the following output is observed whcih represents the amplitude of the corresponding frequency buckets. 
 
-To build and test your contracts, you can run:
-
-```shell
-forge build
-forge test
+```
+(16,16) (-11.6569,-4.82843) (0,0) (0.828427,-0.343146) (0,0) (-0.343146,0.828427) (0,0) (-4.82843,-11.6569)
 ```
 
-For more information on how to use Foundry, check out the [Foundry Github Repository](https://github.com/foundry-rs/foundry/tree/master/forge) and the [foundry-huff library repository](https://github.com/huff-language/foundry-huff).
+which is the correct output as seen in this matplotlib plot as shown here 
 
+<img src="assets/asset.png" width="700" height="400"></img>
 
-## Blueprint
+and the result is shown here 
 
-```ml
-lib
-├─ forge-std — https://github.com/foundry-rs/forge-std
-├─ foundry-huff — https://github.com/huff-language/foundry-huff
-scripts
-├─ Deploy.s.sol — Deployment Script
-src
-├─ SimpleStore — A Simple Storage Contract in Huff
-test
-└─ SimpleStore.t — SimpleStoreTests
+```
+[ 16.        +16.j          -4.82842712-11.65685425j
+   0.         +0.j          -0.34314575 +0.82842712j
+   0.         +0.j           0.82842712 -0.34314575j
+   0.         +0.j         -11.65685425 -4.82842712j]
+[ 0.     0.125  0.25   0.375 -0.5   -0.375 -0.25  -0.125]
 ```
 
+which is the correct result !
 
-## License
+### Credits
 
-[The Unlicense](https://github.com/huff-language/huff-project-template/blob/master/LICENSE)
+This Project was made by three University Students
 
-
-## Acknowledgements
-
-- [forge-template](https://github.com/foundry-rs/forge-template)
-- [femplate](https://github.com/abigger87/femplate)
-
-
-## Disclaimer
-
-_These smart contracts are being provided as is. No guarantee, representation or warranty is being made, express or implied, as to the safety or correctness of the user interface or the smart contracts. They have not been audited and as such there can be no assurance they will work as intended, and users may experience delays, failures, errors, omissions, loss of transmitted information or loss of funds. The creators are not liable for any of the foregoing. Users should proceed with caution and use at their own risk._
+1. Yash Saraswat | [panic](https://www.twitter.com/0xpanicError)
+2. Shourya Goel | [shogo](https://twitter.com/ShogLoFi)
+3. Prabhat Verma | [PROBOT](https://twitter.com/prabhat73082094)
