@@ -1,7 +1,7 @@
 #include './Helper.huff'
 #include './Constants.huff'
-#include './PRBMath.huff'
-#include './Trigonometry.huff'
+#include './PRBMath'
+#include './Trigonometry.Huff'
 
 /// @notice addition
 // a + b
@@ -241,7 +241,44 @@
 }
 
 #define macro SQRT() = takes(2) returns(1){
+   //INPUT STACK => [Re(A),Im(A)]
+   dup2 // [Im(A),Re(A),Im(A)]
+   iszero
+   ImaginaryZero
+   jumpi // [Re(A),Im(A)]
+   dup1 // [Re(A),Re(A),Im(A)]
+   iszero // [Re(A)==0?,Re(A),Im(A)]
+   RealZero
+   jumpi
+   TO_POLAR() // [r,T]
+   SQRT_PRB() // [sqrt(r),T]
+   swap1 // [T,sqrt(r)]
+   0x02 // [2,T,sqrt(r)]
+   swap1 // [T,2,sqrt(r)]
+   sdiv // [T/2,sqrt(r)]
+   swap1 // [sqrt(r),T/2]
 
+   ImaginaryZero:
+
+   RealZero:
+    pop // [Im(A)]
+    0x02 // [2,Im(A)]
+    swap1 // [Im(A),2]
+    ABS() // [abs(Im(A)),2]
+    sdiv // [abs(Im(A))/2]
+    SQRT_PRB() // [sqrt(abs(Im(A))/2)]
+    dup1  // [sqrt(abs(Im(A))/2),sqrt(abs(Im(A))/2)]
+    0x00 // [0,sqrt(abs(Im(A))/2),sqrt(abs(Im(A))/2)]
+    slt // [0<sqrt(abs(Im(A))/2) ? , sqrt(abs(Im(A))/2)]
+    cond_satisfy
+    jumpi 
+    dup1 // [sqrt(abs(Im(A))/2),sqrt(abs(Im(A))/2)]
+    PUT_NEG1() // [-1,sqrt(abs(Im(A))/2),sqrt(abs(Im(A))/2)]
+    mul // [-sqrt(abs(Im(A))/2),sqrt(abs(Im(A))/2)]
+    swap1 // [sqrt(abs(Im(A))/2),-sqrt(abs(Im(A))/2)]
+
+    cond_satisfy:
+    dup1 // [sqrt(abs(Im(A))/2),sqrt(abs(Im(A))/2)]
 }
 
 ///@notice e^(a+bi) calculation
@@ -284,6 +321,5 @@
     swap2 
     sdiv  //[r**n*cos(x)/1e18,r**n*sin(x)/1e18]
 }
-
 
 

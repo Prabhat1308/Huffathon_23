@@ -1,4 +1,6 @@
-#import './PRBMathHelper.huff'
+#include './PRBMathHelper.huff'
+#include './Constants.huff'
+#include './Helper.huff'
 
 #define macro SQRT_PRB() = takes(1) returns(1){
  //Input Stack = [x]
@@ -73,3 +75,50 @@
     sdiv // [1e18*log2(x)/Log2(e)]
 }
 
+#define macro LOG2() = takes(1) returns(1) {
+  // Input Stack => [x]
+  dup1 // [x,x]
+  PUT_SIGN()  //[sign,x]
+  swap1 // [x,sign]
+  [X3] // [1e18,x,sign]
+  dup2 // [x,1e18,x,sign]
+  div // [x/1e18,x,sign]
+  MOST_SIGNIFICANT_BIT() // [msb,x,sign]
+  dup1 // [msb,msb,x,sign]
+  [X3] // [1e18,msb,msb,x,sign]
+  mul // [1e18*msb,msb,x,sign]
+  swap2 // [x,msb,1e18*msb,sign]
+  swap1 // [msb,x,1e18*msb,sign]
+  shr // [x>>msb,1e18*msb,sign]
+  dup1 
+  0x01 // [1,x>>msb,x>>msb,1e18*msb,sign]
+  eq  // [1==x>>msb?,x>>msb,1e18*msb,sign]
+  fractional_zero
+  jumpi // [x>>msb,1e18*msb,sign]
+  [HALF_SCALE] // [5e17,x>>msb,1e18*msb,sign] 
+  looper
+  jump
+
+  looper: // [delta,y,res,sign]
+  0x01 // [1,delta,y,res,sign]
+  shr // [delta>>1,y,res,sign]
+  swap1 // [y,delta>>1,res,sign]
+  dup1 // [y,y,delta>>1,res,sign]
+  mul // [y*y,delta>>1,res,sign]
+  [X3] // [1e18,y*y,delta>>1,res,sign]
+  swap1 // [y*y,1e18,delta>>1,res,sign]
+  sdiv // [y*y/1e18,delta>>1,res,sign] 
+  HELPIT() // [y',delta>>1,res',sign]
+  swap1 // [delta>>1,y',res',sign]
+  dup1 // [delta>>1,delta>>1,y',res',sign]
+  0x00 // [0,delta>>1,delta>>1,y',res',sign]
+  lt // [0<(delta>>1),delta>>1,y',res',sign]
+  looper
+  jumpi // [delta>>1,y',res',sign]
+  pop // [y',res',sign]
+  pop // [res',sign]
+  mul // [res'*sign]
+
+  fractional_zero: // [1e18*msb,sign]
+  mul // [1e18*msb,sign]
+}
