@@ -1,18 +1,18 @@
 #include './Complex.huff'
 
-#define function addZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
-#define function subZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
-#define function mulZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
-#define function divZ(int256 , int 256 , int256 , int256) returns (int256 ,int256)
-#define function calcR(int256 , int 256, int256 , int256) returns (int256 ,int256)
-#define function toPolar(int256 , int 256) returns (int256 ,int256)
-#define function fromPolar(int256 , int 256) returns (int256 ,int256)
-#define function p_atan2(int256 , int 256) returns (int256)
+#define function addZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
+#define function subZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
+#define function mulZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
+#define function divZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
+#define function calcR(int256 , int256, int256 , int256) returns (int256 ,int256)
+#define function toPolar(int256 , int256) returns (int256 ,int256)
+#define function fromPolar(int256 , int256) returns (int256 ,int256)
+#define function p_atan2(int256 , int256) returns (int256)
 #define function atan1to1(int256 ) returns (int256)
-#define function ln(int256 , int 256) returns (int256)
-#define function sqrt(int256 , int 256) returns (int256)
-#define function expZ(int256 , int 256) returns (int256 ,int256)
-#define function pow(int256 , int 256 , int256) returns (int256 ,int256)
+#define function ln(int256 , int256) returns (int256)
+#define function sqrt(int256 , int256) returns (int256)
+#define function expZ(int256 , int256) returns (int256 ,int256)
+#define function pow(int256 , int256 , int256) returns (int256 ,int256)
 
 #define macro MAIN() = takes (0) returns (0) {
    
