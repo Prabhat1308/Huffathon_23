@@ -1,5 +1,7 @@
 #include './Helper.huff'
 #include './Constants.huff'
+#include './PRBMath.huff'
+#include './Trigonometry.huff'
 
 /// @notice addition
 // a + b

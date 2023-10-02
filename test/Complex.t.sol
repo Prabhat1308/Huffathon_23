@@ -9,7 +9,7 @@ contract ComplexTest is Test {
     Complex public complex;
 
     function setUp() public {
-        address com = HuffDeployer.deploy("Wrapper");
+        address com = HuffDeployer.deploy("./ComplexHuff/WRAPPER");
         complex = Complex(com);
     }
 
