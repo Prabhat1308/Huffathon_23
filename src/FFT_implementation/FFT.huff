@@ -11,6 +11,9 @@
     div 
 }
 
+///@notice initialising the 4 test calues of (x,y) in the memory
+///@dev initialise the memory with real values at multiples of 0x40 starting from zero and imaginary values at multiples of 0x40 starting from 0x20
+
 #define macro INIT() = takes(8) returns(0){
     [X3] 0x00 mstore
     0x00 0x20 mstore
@@ -202,44 +205,44 @@
   OK: // [b,a,m]
   dup2 // 
   dup1  // [a,a,b,a,m]
-  0x20
+  0x40
   mul 
   mload // [Re(a),a,b,a,m]
   swap1 // [a,Re(a),b,a,m]
-  0x20
+  0x40
   mul
   0x20
   add
   mload // [Im(a),Re(a),b,a,m]
   dup3
   dup1 // [b,b,Im(a),Re(a),b,a,m]
-  0x20 
+  0x40 
   mul 
   mload // [Re(b),b,Im(a),Re(a),b,a,m]
   swap1 // [b,Re(b),Im(a),Re(a),b,a,m]
-  0x20 
+  0x40 
   mul
   0x20
   add 
   mload // [Im(b),Re(b),Im(a),Re(b),b,a,m]
   dup6 // [a,Im(b),Re(b),Im(a),Re(b),b,a,m]
-  0x20
+  0x40
   mul
   0x20
   add 
   mstore // [Re(b),Im(a),Re(b),b,a,m]
   dup5 // [a,Re(b),Im(a),Re(b),b,a,m]
-  0x20 
+  0x40 
   mul
   mstore // [Im(a),Re(b),b,a,m]
   dup3 // [b,Im(a),Re(b),b,a,m] 
-  0x20
+  0x40
   mul
   0x20
   add 
   mstore // [Re(b),b,a,m]
   dup2 
-  0x20
+  0x40
   mul
   mstore // [b,a,m]
   pop
@@ -259,11 +262,11 @@
     dup7
     add // [a+k=b,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
     dup1 // [b,b,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x20
+    0x40
     mul
     mload // [Re(b),b,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
     swap1
-    0x20
+    0x40
     mul
     0x20
     add
@@ -271,11 +274,11 @@
     0x2200
     mload 
     dup1 // [a,a,Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x20
+    0x40
     mul
     mload // [Re(a),a,Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k] 
     swap1
-    0x20
+    0x40
     mul
     0x20
     add 
@@ -293,12 +296,12 @@
     ADD_Z() // [t_real',t_im',T_im,T_real,Phi_t_im,Phi_t_re,n,k]
     0x2000
     mload
-    0x20
+    0x40
     mul
     mstore
     0x2000
     mload
-    0x20
+    0x40
     mul
     0x20
     add 
@@ -312,14 +315,14 @@
     mload
     dup9
     add 
-    0x20
+    0x40
     mul 
     mload
     0x2200
     mload
     dup9
     add
-    0x20
+    0x40
     mul
     0x20
     add 
