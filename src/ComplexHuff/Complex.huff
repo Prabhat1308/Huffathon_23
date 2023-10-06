@@ -102,12 +102,11 @@
 // return r
 #define macro CALC_R() = takes(2) returns(1) {
     // INPUT STACK => [a,b] 
-    dup1
-    mul 
-    swap1
-    dup1
-    mul
-    swap1
+    dup1  // [a,a,b]
+    mul  // [a*a,b]
+    swap1 // [b,a*a]
+    dup1 // [b,b,a*a]
+    mul  // [b*b,a*a]
     SQRT()
 }
 
@@ -213,7 +212,7 @@
  sdiv // [x*X7/1e18,x]
  [X6] // [X6,x*X7/1e18,x]
  add // [X6+x*X7/1e18,x]
- [X3] //
+ [X3] // [1e18,X6+x*X7/1e18,x]
  dup3 // [x,1e18,X6+x*X7/1e18,x]
  sub // [x-1e18,X6+x*X7/1e18,x]
  dup3 // [x,x-1e18,X6+x*X7/1e18,x]
@@ -243,7 +242,7 @@
 #define macro SQRT() = takes(2) returns(1){
    //INPUT STACK => [Re(A),Im(A)]
    dup2 // [Im(A),Re(A),Im(A)]
-   iszero
+   iszero // [Im(A)==0?,Re(A),Im(A)]
    ImaginaryZero
    jumpi // [Re(A),Im(A)]
    dup1 // [Re(A),Re(A),Im(A)]
@@ -259,6 +258,7 @@
    swap1 // [sqrt(r),T/2]
 
    ImaginaryZero:
+   IMAG_ZERO()
 
    RealZero:
     pop // [Im(A)]

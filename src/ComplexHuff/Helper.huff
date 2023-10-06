@@ -102,3 +102,40 @@
   swap1 // [r,(X1*r^3)/1e54-(X2*r)/1e18]
   pop // [(X1*r^3)/1e54-(X2*r)/1e18]
 }
+
+#define macro IMAG_ZERO() = takes(2) returns(2) {
+    //INPUT STACK => [Re(A),Im(A)]
+    dup1   // [Re(A),Re(A),Im(A)]
+    0x00   // [0,Re(A),Re(A),Im(A)]
+    lt     // [Re(A)>0 ?,Re(A),Im(A)]
+    OK_CONDN
+    jumpi
+    swap1 // [Im(A),Re(A)]
+    pop // [Re(A)]
+    dup1 // [Re(A),Re(A)]
+    SQRT_PRB() // [sqrt(Re(A)),Re(A)]
+    PUT_NEG1() // [-1,sqrt(Re(A)),Re(A)]
+    mul  // [-sqrt(Re(A)),Re(A)]
+    CONDN2()
+
+    OK_CONDN:
+    SQRT_PRB() // [sqrt(Re(A)),Im(A)]
+}
+
+#define macro CONDN2() = takes(2) returns(2) {
+    // INPUT STACK => [-sqrt(Re(A)),Re(A)]
+    dup1 // [-sqrt(Re(A)),-sqrt(Re(A)),Re(A)]
+    0x00 // [0,-sqrt(Re(A)),-sqrt(Re(A)),Re(A)]
+    lt // [-sqrt(Re(A))>0 ?,-sqrt(Re(A)),Re(A)]
+    JUMP2
+    jumpi
+    PUT_NEG1() // [-1,-sqrt(Re(A)),Re(A)]
+    mul // [sqrt(Re(A)),Re(A)]
+    swap1 // [Re(A),sqrt(Re(A))]
+
+    JUMP2:
+    swap1 // [Re(A),-sqrt(Re(A))]
+    pop // [-sqrt(Re(A))]
+    0x00 // [0,-sqrt(Re(A))]
+    
+}
