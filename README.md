@@ -65,4 +65,4 @@ This Project was made by three University Students
 
 1. Yash Saraswat | [panic](https://www.twitter.com/0xpanicError)
 2. Shourya Goel | [shogo](https://twitter.com/ShogLoFi)
-3. Prabhat Verma | [PROBOT](https://twitter.com/prabhat73082094)
+3. Prabhat Verma | [PROBOT](https://twitter.com/pr0b0t1sc00l)
