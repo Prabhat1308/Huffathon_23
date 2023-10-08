@@ -1,141 +1,147 @@
 #include './Constants.huff'
 
 #define macro PUT_C1() = takes(0) returns(1){
-    0x04 // [2]
-    0x2B992DDFA2324A14 //[ 3141592653589793300,4]
-    sdiv // [3141592653589793300/4]
+    0x04                  // [2]
+    0x2B992DDFA2324A14    //[ 3141592653589793300,4]
+    sdiv                  // [3141592653589793300/4]
 }
 
 #define macro PUT_C2() = takes(0) returns(1){
-    PUT_C1() //[c1]
-    0x03 //[3,c1]
-    mul // [3*c1]
+    PUT_C1()        //[c1]
+    0x03            //[3,c1]
+    mul             // [3*c1]
 }
 
 #define macro ABS() = takes(1) returns(1){
   //Input Stack => [x]
-  0x00 //[0,x]
-  dup2 //[x,0,x]
-  slt // [x<0,x]
+
+  0x00         //[0,x]
+  dup2         //[x,0,x]
+  slt          // [x<0,x]
   reverse
   jumpi
 
   reverse:
-  dup1 //[x,x]
-  dup1 //[x,x,x]
-  add //[2x,x]
-  swap1 //[x,2x]
-  sub //[-x]
+  dup1         //[x,x]
+  dup1         //[x,x,x]
+  add          //[2x,x]
+  swap1        //[x,2x]
+  sub          //[-x]
 }
 
 #define macro PUT_X3_CUBE() = takes(0) returns(1){
-   0x03 //[2]
-   [X3] //[1e18,3]
-   exp //[1e54]
+   0x03        //[2]
+   [X3]        //[1e18,3]
+   exp         //[1e54]
 }
 
 #define macro PUT_NEG1() = takes(0) returns(1){
-    0x01 // [1]
-    0x00 // [0,1]
-    sub // [-1]
+    0x01       // [1]
+    0x00       // [0,1]
+    sub        // [-1]
 }
 
 #define macro P_ATAN2_ABS() = takes(1) returns(1) {
     // Input Stack => [x]
-    ABS() // [abs(y)]
-    [X8] // [1e8,abs(y)]
-    add // [1e8+abs(y)]
+
+    ABS()      // [abs(y)]
+    [X8]       // [1e8,abs(y)]
+    add        // [1e8+abs(y)]
 }
 
 #define macro P_ATAN2_INNER_CALC() = takes(2) returns(1){
     //Input Stack => [x,y]
-    dup1 // [x,x,y]
-    0x00 // [0,x,x,y]
-    slt // [x<0,x,y]
+
+    dup1              // [x,x,y]
+    0x00              // [0,x,x,y]
+    slt               // [x<0,x,y]
     diff_case
     jumpi
-    swap1 // [y,x]
-    P_ATAN2_ABS() // [abs_y,x]
-    dup2 // [x,abs_y,x]
-    dup2 // [abs_y,x,abs_y,x]
-    sub// [abs_y-x,abs_y,x]
-    swap2 // [x,abs_y,abs_y-x]
-    add // [x+abs_y,abs_y-x]
-    [X3] // [1e18,x+abs_y,abs_y-x]
-    mul // [1e18*(x+abs_y),abs_y-x]
-    sdiv // [(1e18*(x+abs_y))/(abs_y-x)]  , Let (1e18*(x+abs_y))/(abs_y-x) = r
+    swap1             // [y,x]
+    P_ATAN2_ABS()     // [abs_y,x]
+    dup2              // [x,abs_y,x]
+    dup2              // [abs_y,x,abs_y,x]
+    sub               // [abs_y-x,abs_y,x]
+    swap2             // [x,abs_y,abs_y-x]
+    add               // [x+abs_y,abs_y-x]
+    [X3]              // [1e18,x+abs_y,abs_y-x]
+    mul               // [1e18*(x+abs_y),abs_y-x]
+    sdiv              // [(1e18*(x+abs_y))/(abs_y-x)]  , Let (1e18*(x+abs_y))/(abs_y-x) = r
     P_ATAN2_INNER_T() // [T]
-    PUT_C2() // [c2,T]
-    add // [c2+T]
+    PUT_C2()          // [c2,T]
+    add               // [c2+T]
 
-    diff_case: // [x,y] and x<0 condition
-    swap1 // [y,x]
-    P_ATAN2_ABS() // [abs_y,x]
-    dup2 // [x,abs_y,x]
-    dup2 // [abs_y,x,abs_y,x]
-    add // [abs_y+x,abs_y,x]
-    swap2 // [x,abs_y,abs_y+x]
-    sub // [x-abs_y,abs_y+x]
-    [X3] // [1e18,x-abs_y,abs_y+x]
-    mul // [1e18*(x-abs_y),abs_y+x]
-    sdiv // [(1e18*(x-abs_y))/(abs_y+x)] , Let (1e18*(x+abs_y))/(abs_y-x) = r
+    diff_case:        // [x,y] and x<0 condition
+    swap1             // [y,x]
+    P_ATAN2_ABS()     // [abs_y,x]
+    dup2              // [x,abs_y,x]
+    dup2              // [abs_y,x,abs_y,x]
+    add               // [abs_y+x,abs_y,x]
+    swap2             // [x,abs_y,abs_y+x]
+    sub               // [x-abs_y,abs_y+x]
+    [X3]              // [1e18,x-abs_y,abs_y+x]
+    mul               // [1e18*(x-abs_y),abs_y+x]
+    sdiv              // [(1e18*(x-abs_y))/(abs_y+x)] , Let (1e18*(x+abs_y))/(abs_y-x) = r
     P_ATAN2_INNER_T() // [T]
-    PUT_C1() // [c1,T]
-    add // [c1+T]
+    PUT_C1()          // [c1,T]
+    add               // [c1+T]
 } 
 
 #define macro P_ATAN2_INNER_T() = takes(1) returns(1){
   //Input Stack => [r]
-  [X3] // [1e18,r]
-  dup1 // [r,1e18,r]
-  [X2] // [X2,r,1e18,r]
-  mul // [X2*r,1e18,r]
-  sdiv // [(X2*r)/1e18,r]
-  PUT_X3_CUBE() // [1e54,(X2*r)/1e18,r]
-  0x03 // [3,1e54,(X2*r)/1e18,r]
-  dup4 // [r,3,1e54,(X2*r)/1e18,r]
-  exp // [r^3,1e54,(X2*r)/1e18,r]
-  [X1] // [X1,r^3,1e54,(X2*r)/1e18,r]
-  mul // [X1*r^3,1e54,(X2*r)/1e18,r]
-  sdiv // [(X1*r^3)/1e54,(X2*r)/1e18,r]
-  sub // [(X1*r^3)/1e54-(X2*r)/1e18,r]
-  swap1 // [r,(X1*r^3)/1e54-(X2*r)/1e18]
-  pop // [(X1*r^3)/1e54-(X2*r)/1e18]
+
+  [X3]                 // [1e18,r]
+  dup1                 // [r,1e18,r]
+  [X2]                 // [X2,r,1e18,r]
+  mul                  // [X2*r,1e18,r]
+  sdiv                 // [(X2*r)/1e18,r]
+  PUT_X3_CUBE()        // [1e54,(X2*r)/1e18,r]
+  0x03                 // [3,1e54,(X2*r)/1e18,r]
+  dup4                 // [r,3,1e54,(X2*r)/1e18,r]
+  exp                  // [r^3,1e54,(X2*r)/1e18,r]
+  [X1]                 // [X1,r^3,1e54,(X2*r)/1e18,r]
+  mul                  // [X1*r^3,1e54,(X2*r)/1e18,r]
+  sdiv                 // [(X1*r^3)/1e54,(X2*r)/1e18,r]
+  sub                  // [(X1*r^3)/1e54-(X2*r)/1e18,r]
+  swap1                // [r,(X1*r^3)/1e54-(X2*r)/1e18]
+  pop                  // [(X1*r^3)/1e54-(X2*r)/1e18]
 }
 
 #define macro IMAG_ZERO() = takes(2) returns(2) {
     //INPUT STACK => [Re(A),Im(A)]
-    dup1   // [Re(A),Re(A),Im(A)]
-    0x00   // [0,Re(A),Re(A),Im(A)]
-    lt     // [Re(A)>0 ?,Re(A),Im(A)]
+
+    dup1               // [Re(A),Re(A),Im(A)]
+    0x00               // [0,Re(A),Re(A),Im(A)]
+    lt                 // [Re(A)>0 ?,Re(A),Im(A)]
     OK_CONDN
     jumpi
-    swap1 // [Im(A),Re(A)]
-    pop // [Re(A)]
-    dup1 // [Re(A),Re(A)]
-    SQRT_PRB() // [sqrt(Re(A)),Re(A)]
-    PUT_NEG1() // [-1,sqrt(Re(A)),Re(A)]
-    mul  // [-sqrt(Re(A)),Re(A)]
+    swap1              // [Im(A),Re(A)]
+    pop                // [Re(A)]
+    dup1               // [Re(A),Re(A)]
+    SQRT_PRB()         // [sqrt(Re(A)),Re(A)]
+    PUT_NEG1()         // [-1,sqrt(Re(A)),Re(A)]
+    mul                // [-sqrt(Re(A)),Re(A)]
     CONDN2()
 
     OK_CONDN:
-    SQRT_PRB() // [sqrt(Re(A)),Im(A)]
+    SQRT_PRB()         // [sqrt(Re(A)),Im(A)]
 }
 
 #define macro CONDN2() = takes(2) returns(2) {
     // INPUT STACK => [-sqrt(Re(A)),Re(A)]
-    dup1 // [-sqrt(Re(A)),-sqrt(Re(A)),Re(A)]
-    0x00 // [0,-sqrt(Re(A)),-sqrt(Re(A)),Re(A)]
-    lt // [-sqrt(Re(A))>0 ?,-sqrt(Re(A)),Re(A)]
+
+    dup1               // [-sqrt(Re(A)),-sqrt(Re(A)),Re(A)]
+    0x00               // [0,-sqrt(Re(A)),-sqrt(Re(A)),Re(A)]
+    lt                 // [-sqrt(Re(A))>0 ?,-sqrt(Re(A)),Re(A)]
     JUMP2
     jumpi
-    PUT_NEG1() // [-1,-sqrt(Re(A)),Re(A)]
-    mul // [sqrt(Re(A)),Re(A)]
-    swap1 // [Re(A),sqrt(Re(A))]
+    PUT_NEG1()         // [-1,-sqrt(Re(A)),Re(A)]
+    mul                // [sqrt(Re(A)),Re(A)]
+    swap1              // [Re(A),sqrt(Re(A))]
 
     JUMP2:
-    swap1 // [Re(A),-sqrt(Re(A))]
-    pop // [-sqrt(Re(A))]
-    0x00 // [0,-sqrt(Re(A))]
+    swap1              // [Re(A),-sqrt(Re(A))]
+    pop                // [-sqrt(Re(A))]
+    0x00               // [0,-sqrt(Re(A))]
     
 }
