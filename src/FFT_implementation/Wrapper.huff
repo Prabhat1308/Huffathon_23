@@ -1,0 +1,106 @@
+#include './FFT.huff'
+
+#define function fft(int256[] memory, int256[] memory) view returns (int256[4] memory, int256[4] memory)
+
+///@notice storing values as desired in the fft implementation
+
+#define macro MEMORY_INIT() =takes(0) returns(0){
+
+    // the offset of the last imaginary element
+    0x24 calldataload
+    0x04 add 
+    N() 0x20 mul add
+    
+    // the offset of the last real element
+    0x04 calldataload
+    0x04 add
+    N() 0x20 mul add            //[off(re[n-1],off(im[n-1])]
+    
+    loop1:
+    swap1 
+    dup1 calldataload
+    swap2 dup1 
+    calldataload
+    swap2
+    0x20 swap1 sub
+    swap1 
+    0x20 swap1 sub
+    dup1 
+    0x44 lt 
+    loop1
+    jumpi
+    pop pop
+
+    0x00
+    N() 0x40 mul 
+    loop2: 
+    swap2 dup2 mstore
+    0x20 add
+    swap1 dup1 dup3
+    lt
+    loop2 jumpi
+    pop pop
+}
+
+#define macro RETURN_MEMORY()=takes(0) returns(0){
+
+    // loading all the imaginary numbers into memory
+    0x01 N() sub 0x40 mul 0x20 add
+    loop1:
+    dup1 
+    mload
+    swap1
+    0x40 swap1 sub
+    0x00 dup2
+    sgt
+    loop1
+    jumpi
+    pop   
+    N()
+
+    // loading all their real counterparts into memory
+    dup1 0x40 mul
+    loop2:
+    0x40 swap1 sub
+    dup1 
+    mload
+    swap1
+    0x00 dup2
+    eq iszero
+    loop2
+    jumpi 
+    pop
+    N()
+
+    // the offset foor the lengths of the arrays
+    dup1 0x20 mul 0x60 add  
+    0x40
+
+    // storing the elements in sequential order
+    0x00
+    N() 0x20 mul dup1 add 0x80 add 
+    loop3: 
+    swap2 dup2 mstore
+    0x20 add
+    swap1 dup1 dup3
+    lt
+    loop3 jumpi
+    pop pop
+}
+
+#define macro FFT_LOCAL() =takes(0) returns (0){
+    MEMORY_INIT()              
+    FFT()
+    RETURN_MEMORY()
+    N() 0x20 mul dup1 add 0x80 add
+    0x00 return 
+}
+
+#define macro MAIN()= takes (0) returns (0){
+    0x00 calldataload 0xE0 shr
+    __FUNC_SIG(fft) eq fft jumpi
+    0x00 0x00 revert
+
+    fft:
+    FFT_LOCAL()
+}

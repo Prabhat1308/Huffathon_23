@@ -1,132 +1,83 @@
 #include './Complex.huff'
 
-#define function addZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
-#define function subZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
-#define function mulZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
-#define function divZ(int256 , int256 , int256 , int256) returns (int256 ,int256)
-#define function calcR(int256 , int256) returns (int256 ,int256)
-#define function toPolar(int256 , int256) returns (int256 ,int256)
-#define function fromPolar(int256 , int256) returns (int256 ,int256)
-#define function p_atan2(int256 , int256) returns (int256)
-#define function atan1to1(int256 ) returns (int256)
-#define function ln(int256 , int256) returns (int256)
-#define function sqrt(int256 , int256) returns (int256)
-#define function expZ(int256 , int256) returns (int256 ,int256)
-#define function pow(int256 , int256 , int256) returns (int256 ,int256)
+#define function subz(int256,int256,int256,int256) view returns (int256,int256)
+#define function addz(int256,int256,int256,int256) view returns (int256,int256)
+#define function mulz(int256,int256,int256,int256) view returns (int256,int256)
+#define function divz(int256,int256,int256,int256) view returns (int256,int256)
+#define function calcR(int256,int256) view returns (uint256)
+#define function toPolar(int256,int256) view returns (int256,int256)
+#define function fromPolar(int256,int256) view returns (int256,int256)
+// #define function p_atan2(int256 , int256) returns (int256)
+// #define function atan1to1(int256 ) returns (int256)
+#define function ln(int256,int256) view returns (int256,int256)
+#define function sqrt(int256,int256) view returns (int256,int256)
+#define function expZ(int256,int256) view returns (int256,int256)
+#define function pow(int256,int256,int256) view returns (int256,int256)
 
-#define macro MAIN() = takes (0) returns (0) {
-   
-   0x00 calldataload
-   0xE0 shr
 
-   dup1 __FUNC_SIG(addZ) eq addZ jumpi
-   dup1 __FUNC_SIG(subZ) eq subZ jumpi
-   dup1 __FUNC_SIG(mulZ) eq mulZ jumpi
-   dup1 __FUNC_SIG(divZ) eq divZ jumpi
-   dup1 __FUNC_SIG(calcR) eq calcR jumpi
-   dup1 __FUNC_SIG(toPolar) eq toPolar jumpi
-   dup1 __FUNC_SIG(fromPolar) eq fromPolar jumpi
-   dup1 __FUNC_SIG(p_atan2) eq p_atan2 jumpi
-   dup1 __FUNC_SIG(atan1to1) eq atan1to1 jumpi
-   dup1 __FUNC_SIG(ln) eq ln jumpi
-   dup1 __FUNC_SIG(sqrt) eq sqrt jumpi 
-   dup1 __FUNC_SIG(expZ) eq expZ jumpi
-        __FUNC_SIG(pow) eq pow jumpi
-   0x00 0x00 revert
-
-    addZ:
-    ADD_Z_LOCAL()
-
-    subZ:
-    SUB_Z_LOCAL()
-
-    mulZ:
-    MUL_Z_LOCAL()
-
-    divZ:
-    DIV_Z_LOCAL()
-
-    calcR:
-    CALC_R_LOCAL()
-
-    toPolar:
-    TO_POLAR_LOCAL()
-
-    fromPolar:
-    FROM_POLAR_LOCAL()
-
-    p_atan2:
-    P_ATAN2_LOCAL()
-
-    atan1to1:
-    ATAN1TO1_LOCAL()
-
-    ln:
-    LN_LOCAL()
-
-    sqrt:
-    SQRT_LOCAL()
-
-    expZ:
-    EXP_Z_LOCAL()
-
-    pow:
-    POW_LOCAL()
-
-}
-
-#define macro ADD_Z_LOCAL() = takes(0) returns(0) {
-    0x04 calldataload
-    0x24 calldataload
-    0x44 calldataload
-    0x64 calldataload
-    ADD_Z() 
+#define macro SUB_Z_LOCAL() = takes (0) returns (0) {
+    // Load value from storage.
+    0x04 calldataload //[r1]
+    0x24 calldataload //[r2]
+    0x44 calldataload //[i1]
+    0x64 calldataload //[i2, i1, r2, r1]
+    SUB_Z()
+    // Store value in memory.
     0x00 mstore
     0x20 mstore
-    0x20 0x00 return
+    // Return value
+    0x40 0x00 return
 }
 
-#define macro SUB_Z_LOCAL() = takes(0) returns(0) {
-    0x04 calldataload
-    0x24 calldataload
-    0x44 calldataload
-    0x64 calldataload
-    SUB_Z() 
+#define macro ADD_Z_LOCAL() = takes (0) returns (0) {
+    // Load value from storage.
+    0x04 calldataload //[r1]
+    0x24 calldataload //[r2]
+    0x44 calldataload //[i1]
+    0x64 calldataload //[i2, i1, r2, r1]
+    ADD_Z()
+    // Store value in memory.
     0x00 mstore
     0x20 mstore
-    0x20 0x00 return
+    // Return value
+    0x40 0x00 return
 }
 
-#define macro MUL_Z_LOCAL() = takes(0) returns(0){
-    0x04 calldataload
-    0x24 calldataload
-    0x44 calldataload
-    0x64 calldataload
+#define macro MUL_Z_LOCAL() = takes (0) returns (0) {
+    // Load value from storage.
+    0x04 calldataload //[i2]
+    0x24 calldataload //[i1,i2]
+    0x44 calldataload //[r2,i1,i2]
+    0x64 calldataload //[r1,r2,i1,i2]
     MUL_Z()
+    //store in memeory
     0x00 mstore
     0x20 mstore
-    0x20 0x00 return
+    //return value
+    0x40 0x00 return
 }
 
-#define macro DIV_Z_LOCAL() = takes(0) returns(0){
-    0x04 calldataload
-    0x24 calldataload
-    0x44 calldataload
-    0x64 calldataload
+#define macro DIV_Z_LOCAL() = takes (0) returns (0) {
+    // Load value from storage.
+    0x04 calldataload //[i2]
+    0x24 calldataload //[i1,i2]
+    0x44 calldataload //[r2,i1,i2]
+    0x64 calldataload //[r1,r2,i1,i2]
     DIV_Z()
+    //store in memeory
     0x00 mstore
     0x20 mstore
-    0x20 0x00 return
+    //return value
+    0x40 0x00 return
 }
 
 #define macro CALC_R_LOCAL() = takes(0) returns(0){
     0x04 calldataload
     0x24 calldataload
-    0x44 calldataload
-    0x64 calldataload
     CALC_R()
+    [VALUE_LOCATION]
+    sload
     0x00 mstore
-    0x20 mstore
     0x20 0x00 return
 }
 
@@ -136,42 +87,39 @@
     TO_POLAR()
     0x00 mstore
     0x20 mstore
-    0x20 0x00 return
+    0x40 0x00 return
 }
 
 #define macro FROM_POLAR_LOCAL() = takes(0) returns(0){
     0x04 calldataload
     0x24 calldataload
     FROM_POLAR()
-    0x00 mstore
-    0x20 mstore
-    0x20 0x00 return
 }
 
-#define macro P_ATAN2_LOCAL() = takes(0) returns(0){
-    0x04 calldataload
-    0x24 calldataload
-    P_ATAN2()
-    0x00 mstore
-    0x20 0x00 return
+// #define macro P_ATAN2_LOCAL() = takes(0) returns(0){
+//     0x04 calldataload
+//     0x24 calldataload
+//     P_ATAN2()
+//     0x00 mstore
+//     0x20 0x00 return
 
-}
+// }
 
-#define macro ATAN1TO1_LOCAL() = takes(0) returns(0){
-    0x04 calldataload
-    ATAN1TO1()
-    0x00 mstore
-    0x20 0x00 return
+// #define macro ATAN1TO1_LOCAL() = takes(0) returns(0){
+//     0x04 calldataload
+//     ATAN1TO1()
+//     0x00 mstore
+//     0x20 0x00 return
 
-}
+// }
 
 #define macro LN_LOCAL() = takes(0) returns(0){
     0x04 calldataload
     0x24 calldataload
     LN()
     0x00 mstore
-    0x20 0x00 return
-
+    0x20 mstore
+    0x40 0x00 return
 }
 
 #define macro SQRT_LOCAL() = takes(0) returns(0){
@@ -179,7 +127,8 @@
     0x24 calldataload
     SQRT()
     0x00 mstore
-    0x20 0x00 return
+    0x20 mstore
+    0x40 0x00 return
 
 }
 
@@ -187,10 +136,8 @@
     0x04 calldataload
     0x24 calldataload
     EXP_Z()
-    0x00 mstore
-    0x20 mstore
-    0x20 0x00 return
 }
+
 
 #define macro POW_LOCAL() = takes(0) returns(0){
     0x04 calldataload
@@ -199,7 +146,68 @@
     POW()
     0x00 mstore
     0x20 mstore
-    0x20 0x00 return
+    0x40 0x00 return
 }
 
 
+
+#define macro MAIN() = takes (0) returns (0) {
+    // Identify which function is being called.
+    0x00 calldataload 0xE0 shr
+    dup1 __FUNC_SIG(subz) eq sub_z jumpi
+    dup1 __FUNC_SIG(addz) eq add_z jumpi
+    dup1 __FUNC_SIG(mulz) eq mul_z jumpi
+    dup1 __FUNC_SIG(divz) eq div_z jumpi
+    dup1 __FUNC_SIG(calcR) eq calc_R jumpi
+    dup1 __FUNC_SIG(toPolar) eq to_Polar jumpi
+    dup1 __FUNC_SIG(fromPolar) eq from_Polar jumpi
+//    dup1 __FUNC_SIG(p_atan2) eq p_atan2 jumpi
+//    dup1 __FUNC_SIG(atan1to1) eq atan1to1 jumpi
+    dup1 __FUNC_SIG(ln) eq ln_Z jumpi
+    dup1 __FUNC_SIG(sqrt) eq sqrt_jump jumpi 
+    dup1 __FUNC_SIG(expZ) eq exp_Z jumpi
+    dup1    __FUNC_SIG(pow) eq pow_Z jumpi
+
+    0x00 0x00 revert
+
+    sub_z:
+    SUB_Z_LOCAL()
+
+    add_z:
+    ADD_Z_LOCAL()
+
+    mul_z:
+    MUL_Z_LOCAL()
+
+    div_z:
+    DIV_Z_LOCAL()
+
+    calc_R:
+    CALC_R_LOCAL()
+
+    to_Polar:
+    TO_POLAR_LOCAL()
+
+    from_Polar:
+    FROM_POLAR_LOCAL()
+
+    // p_atan2:
+    // P_ATAN2_LOCAL()
+
+    // atan1to1:
+    // ATAN1TO1_LOCAL()
+
+    ln_Z:
+    LN_LOCAL()
+
+    sqrt_jump:
+    SQRT_LOCAL()
+
+    exp_Z:
+    EXP_Z_LOCAL()
+
+    pow_Z:
+    POW_LOCAL()
+
+
+}

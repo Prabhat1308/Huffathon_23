@@ -1,70 +1,68 @@
 #include './PRBMathHelper.huff'
 #include './Constants.huff'
-#include './Helper.huff'
+// #include './Helper.huff'
 
-#define macro SQRT_PRB() = takes(1) returns(1){
- //Input Stack = [x]
+// #define macro SQRT_PRB() = takes(1) returns(1){
+// //  //Input Stack = [x]
 
-   dup1                     // [x,x]
-   iszero                   // [x==0?,x]
-   jumpi
-   zero_found 
-   [X3]                     // [1e18,x]
-   mul                      // [1e18*x] 
-   dup1                     // [1e18*x,1e18*x]
-   0x01                     // [1,1e18*x,1e18*x]
-   GATE1()
-   GATE2()
-   GATE3()
-   GATE4()
-   GATE5()
-   GATE6()
-   GATE7()                  // [result,xnum,x'] 
-   swap1                    // [xnum,result,x']
-   pop                      // [result,x']
-   0x00                     // [0,result,x']
-   loop 
-   jump 
+//    dup1                     // [x,x]
+//    iszero                   // [x==0?,x]
+//    zero_found 
+//    jumpi
+//    [X3]                     // [1e18,x]
+//    mul                      // [1e18*x] 
+//    dup1                     // [1e18*x,1e18*x]
+//    0x01                     // [1,1e18*x,1e18*x]
+//    GATE1()
+//    GATE2()
+//    GATE3()
+//    GATE4()
+//    GATE5()
+//    GATE6()
+//    GATE7()                  // [result,xnum,x'] 
+//    swap1                    // [xnum,result,x']
+//    pop                      // [result,x']
+//    0x00                     // [0,result,x']
+//    loop 
+//    jump 
    
-   loop:                    // [i,result,x']
-   0x01                     // [1,i,result,x']
-   add                      // [i+1,result,x']
-   swap1                    // [result,i+1,x']
-   dup1                     // [result,result,i+1,x']
-   dup4                     // [x',result,result,i+1,x']
-   add                      // [x'+result,result,i+1,x']
-   div                      // [(x'+result)/result,i+1,x'] , Let (x'+result)/result = result 
-   dup2                     // [i+1,result,i+1,x']
-   0x07                     // [7,i+1,result,i+1,x']
-   eq                       // [i+1==7?,result,i+1,x']
-   done
-   jumpi
-   loop
-   jump 
+//    loop:                    // [i,result,x']
+//    0x01                     // [1,i,result,x']
+//    add                      // [i+1,result,x']
+//    swap1                    // [result,i+1,x']
+//    dup1                     // [result,result,i+1,x']
+//    dup4                     // [x',result,result,i+1,x']
+//    add                      // [x'+result,result,i+1,x']
+//    div                      // [(x'+result)/result,i+1,x'] , Let (x'+result)/result = result 
+//    dup2                     // [i+1,result,i+1,x']
+//    0x07                     // [7,i+1,result,i+1,x']
+//    eq                       // [i+1==7?,result,i+1,x']
+//    done
+//    jumpi
+//    loop
+//    jump 
    
-   done:                    // [result,i+1,x']
-   swap1                    // [i+1,result,x']
-   pop                      // [result,x']
-   dup1                     // [result,result,x']
-   swap2                    // [x',result,result]
-   div                      // [x'/result,result]
-   dup1                     // [x'/result,x'/result,result]
-   dup3                     // [result,x'/result,x'/result,result]
-   lt                       // [result < x'/result,x'/result,result]
-   iszero 
-   final
-   jumpi
-   pop
+//    done:                    // [result,i+1,x']
+//    swap1                    // [i+1,result,x']
+//    pop                      // [result,x']
+//    dup1                     // [result,result,x']
+//    swap2                    // [x',result,result]
+//    div                      // [x'/result,result]
+//    dup1                     // [x'/result,x'/result,result]
+//    dup3                     // [result,x'/result,x'/result,result]
+//    lt                       // [result < x'/result,x'/result,result]
+//    iszero 
+//    final
+//    jumpi
+//    pop
 
-   final:                   // [x'/result,result]
-   swap1                    // [result,x'/result]
-   pop                      // [x'/result]
+//    final:                   // [x'/result,result]
+//    swap1                    // [result,x'/result]
+//    pop                      // [x'/result]
 
-   zero_found:              //[x]
-   pop                      // []
-   0x00                     // [0]
-
-}
+//    zero_found:              //[x]
+   
+// }
 
 #define macro LOGE_PRB() = takes(1) returns(1) {
     //Input stack => [x]
@@ -81,7 +79,7 @@
   // Input Stack => [x]
 
   dup1                     // [x,x]
-  PUT_SIGN()               //[sign,x]
+  PUT_SIGN()               // [sign,x]
   swap1                    // [x,sign]
   [X3]                     // [1e18,x,sign]
   dup2                     // [x,1e18,x,sign]
@@ -103,25 +101,23 @@
   jump
 
   looper:                  // [delta,y,res,sign]
-  0x01                     // [1,delta,y,res,sign]
-  shr                      // [delta>>1,y,res,sign]
-  swap1                    // [y,delta>>1,res,sign]
-  dup1                     // [y,y,delta>>1,res,sign]
-  mul                      // [y*y,delta>>1,res,sign]
-  [X3]                     // [1e18,y*y,delta>>1,res,sign]
-  swap1                    // [y*y,1e18,delta>>1,res,sign]
-  sdiv                     // [y*y/1e18,delta>>1,res,sign] 
-  HELPIT()                 // [y',delta>>1,res',sign]
-  swap1                    // [delta>>1,y',res',sign]
+  swap1                    // [y,delta,res,sign]
+  dup1                     // [y,y,delta,res,sign]
+  mul                      // [y*y,delta,res,sign]
+  [X3]                     // [1e18,y*y,delta,res,sign]
+  swap1                    // [y*y,1e18,delta,res,sign]
+  sdiv                     // [y*y/1e18,delta,res,sign] 
+  HELPIT()                 // [y',delta,res',sign]
+  swap1                    // [delta,y',res',sign]
+  0x01                     // [1,delta,y,res',sign]
+  shr                      // [delta>>1,y,res',sign]
   dup1                     // [delta>>1,delta>>1,y',res',sign]
   0x00                     // [0,delta>>1,delta>>1,y',res',sign]
   lt                       // [0<(delta>>1),delta>>1,y',res',sign]
   looper
   jumpi                    // [delta>>1,y',res',sign]
   pop                      // [y',res',sign]
+  fractional_zero:         // [x>>msb,1e18*msb,sign] or [y',res',sign]
   pop                      // [res',sign]
   mul                      // [res'*sign]
-
-  fractional_zero:         // [1e18*msb,sign]
-  mul                      // [1e18*msb,sign]
 }

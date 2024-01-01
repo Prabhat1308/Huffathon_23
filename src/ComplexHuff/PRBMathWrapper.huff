@@ -1,0 +1,44 @@
+#include './PRBMath.huff'
+// #include './PRBMathHelper.huff'
+
+#define function sqrt(int256 x) view returns (int256 result)
+#define function ln(int256 x) view returns (int256 result) 
+#define function log_2(int256 x) view returns (int256 result)
+
+#define macro SQRT_LOCAL()=takes(0) returns(0){
+    0x04 calldataload
+    // SQRT_PRB()
+    0x00 mstore
+    0x20 0x00 return
+}
+
+#define macro LN_LOCAL()=takes(0) returns(0){
+    0x04 calldataload
+    LOGE_PRB()
+    0x00 mstore
+    0x20 0x00 return
+}
+
+#define macro LOG_2_LOCAL() =takes(0) returns(0){
+    0x04 calldataload
+    LOG2()
+    0x00 mstore
+    0x20 0x00 return
+}
+
+#define macro MAIN() =takes(0) returns(0){
+    0x00 calldataload 0xE0 shr
+    dup1 __FUNC_SIG(sqrt) eq sqrt jumpi
+    dup1 __FUNC_SIG(ln) eq ln jumpi
+    __FUNC_SIG(log_2) eq log_2 jumpi
+    0x00 0x00 revert 
+
+    sqrt:
+    SQRT_LOCAL()
+
+    ln:
+    LN_LOCAL()
+
+    log_2:
+    LOG_2_LOCAL()
+}

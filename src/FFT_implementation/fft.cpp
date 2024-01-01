@@ -57,6 +57,7 @@ int main()
 {
     // const Complex a[] = {cd(0, 0), cd(1, 1), cd(3, 3), cd(4, 4), cd(4, 4), cd(3, 3), cd(1, 1), cd(0, 0)};
     const Complex a[] = {cd(1,0),cd(-1,0),cd(0,1),cd(0,-1)};
+    // const Complex a[] = {cd(1,0),cd(-1,0),cd(0,1),cd(0,-1),cd(1,0),cd(2,1),cd(3,3),cd(2,0)};
     CArray x(a, 4);
     fft(x);
     for (auto it : x)

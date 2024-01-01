@@ -1,20 +1,32 @@
 #include './CONSTANTS.huff'
-#include '../ComplexHUff/Trigonometry.huff'
-#include '../ComplexHUff/Complex.huff'  
-#include '../ComplexHUff/PRBMath.huff'
-#include '../ComplexHUff/Constants.huff'
-#include '../ComplexHuff/Helper.huff'
+// #include '../ComplexHuff/Trigonometry.huff'
+#include '../ComplexHuff/Complex.huff'  
+// #include '../ComplexHuff/PRBMath.huff'
+#include '../ComplexHuff/Constants.huff'
+// #include '../ComplexHuff/Helper.huff'
 
 ///@notice put the initial value of theta_t on stack
 ///@dev theta_t = pi/n
 
 #define macro PUT_THETA_T() = takes(0) returns(1) {
-    [N]
+    N()
     [PI]
     div 
 }
 
-///@notice initialising the 4 test calues of (x,y) in the memory
+#define macro SCALE_DOWN()=takes(1) returns(1){
+    [X3]
+    swap1 
+    sdiv
+}
+
+#define macro N()=takes(0) returns(1){
+    0x04 calldataload 
+    0x04 add
+    calldataload
+}
+
+///@notice initialising the 4 test values of (x,y) in the memory
 ///@dev initialise the memory with real values at multiples of 0x40 starting from zero 
 ///@dev and imaginary values at multiples of 0x40 starting from 0x20
 
@@ -34,60 +46,49 @@
 ///@dev the FFT macro updates the 4 test values in the memory with the final values of the FFT
 
 #define macro FFT() = takes(0) returns(0) {
+    N()                            // [k]
+    PUT_PHI_T()                    // [Phi_t_im,Phi_t_re,k]
    loop1:
-     [N]                           // [k]
-     INNER_CALC1()
-     0x01                          //[1,k]
-     shr                           // [k>>1] 
-     dup1                          // [k>>1,k>>1]
-     0x01                          // [1,k>>1,k>>1]
-     lt                            // [(k>>1) >1 , k>>1]
+     dup3                          // [k,Phi_t_im,Phi_t_re,n]
+     0x01                          // [1,k,Phi_t_im,Phi_t_re,n]
+     shr                           // [k>>1,Phi_t_im,Phi_t_re,n]
+     swap3                         // [n,Phi_t_im,Phi_t_re,k]
+     swap2 swap1                   // [Phi_t_im,Phi_t_re,n,k]
+     INNER_CALC1()                 // [Phi_t_im,Phi_t_re,k]
+     dup3                          // [k,Phi_t_im,Phi_t_re,k]
+     0x01                          // [1,k,Phi_t_im,Phi_t_re,k]
+     lt                            // [k>1,Phi_t_im,Phi_t_re,k]
      loop1
      jumpi
-     pop                           // []
+     pop pop pop                   // []
+     REVERSE_BITS()
 }
 
+#define macro PUT_PHI_T() = takes(1) returns(3) {
+    PUT_THETA_T()                  // [Theta_T,k]
+    COS()                          // [cos(Theta_T,k)]
+    PUT_THETA_T()                  // [Theta_T,cos(Theta_T),k]
+    SIN()                          // [sin(Theta_t),cos(Theta_T),k]
+    0x01
+    0x00
+    sub
+    mul                            // [Phi_t_im,Phi_t_re,k]
+}
 
-#define macro INNER_CALC1() = takes(0) returns(0) {
-    //INPUT stack => [k]
-
-    dup1                           // [n=k,k]
-    PUT_THETA_T()                  // [Theta_T,n,k]
-    COS()                          // [cos(Theta_T),n,k]
-    dup1                           // [cos(Theta_T),cos(Theta_T),n,k]
-    PUT_THETA_T()                  // [Theta_T,cos(Theta_T),cos(Theta_T),n,k]
-    SIN()                          // [sin(Theta_T),cos(Theta_T),cos(Theta_T),n,k] , [Phi_t_im,Phi_t_re,Phi_t_re_temp,..]
-    dup1                           // [sin(Theta_T),sin(Theta_T),cos(Theta_T),cos(Theta_T),n,k]
-    dup1                           // [sin(Theta_T),sin(Theta_T),sin(Theta_T),cos(Theta_T),cos(Theta_T),n,k]
-    mul                            // [sin(Theta_T)*sin(Theta_T),sin(Theta_T),cos(Theta_T),cos(Theta_T),n,k]
-    swap2                          // [cos(Theta_T),sin(Theta_T)*sin(Theta_T),sin(Theta_T),cos(Theta_T),n,k]
-    dup1                           // [cos(Theta_T),cos(Theta_T),sin(Theta_T)*sin(Theta_T),sin(Theta_T),cos(Theta_T),n,k]
-    mul                            // [cos(Theta_T)*cos(Theta_T),sin(Theta_T)*sin(Theta_T),sin(Theta_T),cos(Theta_T),n,k]
-    [X3]                           // [1e18,cos(Theta_T)*cos(Theta_T),sin(Theta_T)*sin(Theta_T),sin(Theta_T),cos(Theta_T),n,k]
-    swap1                          // [cos(Theta_T)*cos(Theta_T),1e18,sin(Theta_T)*sin(Theta_T),sin(Theta_T),cos(Theta_T),n,k]
-    sdiv                           // [cos(Theta_T)*cos(Theta_T)/1e18,sin(Theta_T)*sin(Theta_T),sin(Theta_T),cos(Theta_T),n,k]
-    swap1                          // [sin(Theta_T)*sin(Theta_T),cos(Theta_T)*cos(Theta_T)/1e18,sin(Theta_T),cos(Theta_T),n,k]
-    [X3]                           // [1e18,sin(Theta_T)*sin(Theta_T),cos(Theta_T)*cos(Theta_T)/1e18,sin(Theta_T),cos(Theta_T),n,k]
-    swap1                          // [sin(Theta_T)*sin(Theta_T),1e18,cos(Theta_T)*cos(Theta_T)/1e18,sin(Theta_T),cos(Theta_T),n,k]
-    sdiv                           // [sin(Theta_T)*sin(Theta_T)/1e18,cos(Theta_T)*cos(Theta_T)/1e18,sin(Theta_T),cos(Theta_T),n,k]
-    swap1                          // [cos(Theta_T)*cos(Theta_T)/1e18,sin(Theta_T)*sin(Theta_T)/1e18,sin(Theta_T),cos(Theta_T),n,k]
-    sub                            // [cos(Theta_T)*cos(Theta_T)/1e18-sin(Theta_T)*sin(Theta_T)/1e18,sin(Theta_T),cos(Theta_T),n,k] , Let cos(Theta_T)*cos(Theta_T)/1e18-sin(Theta_T)*sin(Theta_T)/1e18 = Phi_t_re
-    swap2                          // [cos(Theta_T),sin(Theta_T),Phi_t_re',n,k]
-    mul                            // [cos(Theta_T)*sin(Theta_T),Phi_t_re',n,k]
-    0x02                           // [2,cos(Theta_T)*sin(Theta_T),Phi_t_re',n,k]
-    mul                            // [2*cos(Theta_T)*sin(Theta_T),Phi_t_re,n,k] , Let 2*cos(Theta_T)*sin(Theta_T) = Phi_t_im
+#define macro INNER_CALC1() = takes(4) returns(3) {
+    //INPUT stack => [Phi_t_im,Phi_t_re,n,k] 
+    dup1 swap2 dup1                // [Phi_t_re,Phit_t_re,Phi_t_im,Phi_t_im,n,k]
+    MUL_Z()                         
+    SCALE_DOWN() swap1 SCALE_DOWN() 
     [X3]                           // [T_real,Phi_t_im,Phi_t_re,n,k]
     0x00                           // [T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    INNER_CALC2()                  // returns with []
-    [N]                            // [N]
-    LOG2()                         // [LOG2(N)]
-    INNER_CALC3()
+    INNER_CALC2()                  // returns with [Phi_t_im,Phi_t_re,k]
 }
  
  ///@notice 
  ///@dev 0x2000 is memory location for l loop counter
 
-#define macro INNER_CALC2() = takes(0) returns(0) {
+#define macro INNER_CALC2() = takes(6) returns(3) {
  // Input_Stack => [T_im,T_real,Phi_t_im,Phi_t_re,n,k]
  
  0x00                              // [0,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
@@ -98,47 +99,44 @@
  dup2                              // [T_real,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k]
  dup5  
  mul                               // [Phi_te_re*T_real,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k]
- [X3]
- swap1
- sdiv                              // [Phi_te_re*T_real/1e18,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k]
+ SCALE_DOWN()                      // [Phi_te_re*T_real/1e18,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k]
  dup2                              // [T_im,Phi_te_re*T_real/1e18,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k]
  dup5                              // [Phi_t_im,T_im,Phi_te_re*T_real/1e18,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k]
  mul
- [X3]
- swap1
- sdiv                              // [Phi_t_im*T_im/1e18,Phi_te_re*T_real/1e18,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k]
+ SCALE_DOWN()                      // [Phi_t_im*T_im/1e18,Phi_te_re*T_real/1e18,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k]
  swap1
  sub                               // [Phi_te_re*T_real/1e18-Phi_t_im*T_im/1e18,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k] , Let Phi_te_re*T_real/1e18-Phi_t_im*T_im/1e18 = T_real
                                    // [T_real,T_im,T_real_temp,Phi_t_im,Phi_t_re,n,k]
- dup5                              // [Phi_t_re,T_im,T_real_temp,Phi_t_im,T_real,n,k]
+ swap2 swap1                       // [T_im,T_real_temp,T_real,Phi_t_im,Phi_t_re,n,k]
+ dup5                              // [Phi_t_re,T_im,T_real_temp,T_real,Phi_t_im,Phi_t_real,n,k]
  mul
- [X3]
- swap1
- sdiv                              // [Phi_t_re*T_im/1e18,T_real_temp,Phi_t_im,Phi_t_re,T_real,n,k]
+ SCALE_DOWN()                      // [Phi_t_re*T_im/1e18,T_real_temp,T_real,Phi_t_im,Phi_t_re,n,k]
  swap1 
- dup3                              // [Phi_t_im,T_real_temp,Phi_t_re*T_im/1e18,Phi_t_im,Phi_t_re,T_real,n,k]
+ dup4                              // [Phi_t_im,T_real_temp,Phi_t_re*T_im/1e18,T_real,Phi_t_im,Phi_t_re,n,k]
  mul
- [X3]
- swap1
- sdiv
- sub                               // [Phi_t_im*T_real_temp/1e18-Phi_t_re*T_im/1e18,Phi_t_im,Phi_t_re,T_real,n,k] , Let Phi_t_im*T_real_temp/1e18-Phi_t_re*T_im/1e18 = T_im
+ SCALE_DOWN()
+ add                               // [Phi_t_im*T_real_temp/1e18+Phi_t_re*T_im/1e18,T_real,Phi_t_im,Phi_t_re,T_real,n,k] , Let Phi_t_im*T_real_temp/1e18+Phi_t_re*T_im/1e18 = T_im
+                                   // [T_im,T_real,Phi_t_im,Phi_t_re,T_real,n,k]
  0x2000
  mload
  0x01
  add 
- dup1                              // [l+1,l+1,Phi_t_im,Phi_t_re,T_real,n,k]
+ dup1                              // [l+1,l+1,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
  0x2000
- mstore                            // [l+1,Phi_t_im,Phi_t_re,T_real,n,k]
- dup6
+ mstore                            // [l+1,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+ dup7
  gt
- jumpi
  LOOP
- pop pop pop pop pop pop
+ jumpi
+ pop pop                           // [Phi_t_im,Phi_t_re,n,k]
+ swap2 pop swap1                   // returns with [Phi_t_im,Phi_t_re,k]
 }
 
-#define macro INNER_CALC3() = takes(1) returns(0) {
-    // Input Stack = [m] 
-
+#define macro REVERSE_BITS() = takes(0) returns(0) {
+    N()                            // [N]
+    [X3] mul
+    LOG2()                         // [LOG2(N)]
+    SCALE_DOWN()
     0x00                           // [0,m]
     Looper_calc3:                  // [a,m]
     dup1                           // [b=a,a,m]
@@ -188,38 +186,37 @@
     or                             // [((b&0x00ff00ff)<<8)|((b&0xff00ff00)>>8),a,m] , Let ((b&0x00ff00ff)<<8)|((b&0xff00ff00)>>8) = new_b = b
                                    // [b,a,m]
     dup1                           // [b,b,a,m]
-    16                             // [16,b,b,a,m]
+    0x10                             // [16,b,b,a,m]
     shr                            // [b>>16,b,a,m]
     swap1                          // [b,b>>16,a,m]
-    16                             // [16,b,b>>16,a,m]
+    0x10                             // [16,b,b>>16,a,m]
     shl                            // [b<<16,b>>16,a,m]
     or                             // [(b<<16)|(b>>16),a,m]
     dup3                           // [m,(b<<16)|(b>>16),a,m]
-    32                             // [32,m,(b<<16)|(b>>16),a,m]
+    0x20                            // [32,m,(b<<16)|(b>>16),a,m]
     sub                            // [(32-m),(b<<16)|(b>>16),a,m]
     shr                            // [(b<<16)|(b>>16)>>(32-m),a,m]
     COND_SOLVE()                   // [a,m]
     0x01                           // [1,a,m]
     add                            // [a+1,m]
     dup1                           // [a+1,a+1,m]
-    [N]                            // [N,a+1,a+1,m]
+    N()                            // [N,a+1,a+1,m]
     gt                             // [N>a+1,a+1,m]
     Looper_calc3
     jumpi
+    pop pop                         
 }
 
-#define macro COND_SOLVE() = takes(0) returns(0){
+#define macro COND_SOLVE() = takes(3) returns(2){
   // Input stack => [b,a,m]
 
   dup1                             // [b,b,a,m]
-  dup2                             // [a,b,b,a,m]
-  lt                               // [a<b,b,a,m]
+  dup3                             // [a,b,b,a,m]
+  gt                               // [a>b,b,a,m]
   OK
   jumpi
-  pop                              // [a,m]
-  
-  OK:                              // [b,a,m]
-  dup2                             // [b,b,a,m]
+                                   // [b,a,m]
+  dup2                             // [a,b,a,m]
   dup1                             // [a,a,b,a,m]
   0x40                             // [0x40,a,a,b,a,m]
   mul                              // [a*0x40,a,b,a,m]
@@ -261,6 +258,7 @@
   0x40                             // [0x40,b,Re(b),b,a,m]
   mul                              // [b*0x40,Re(b),b,a,m]
   mstore                           // [b,a,m]
+  OK:
   pop                              // [a,m]
 
 }
@@ -269,7 +267,7 @@
 ///@dev 0x2000 is memory location for  loop counter l
 ///@dev 0x2200 is memory location for loop counter a
 
-#define macro INNER_CALC4() = takes(0) returns(0) {
+#define macro INNER_CALC4() = takes(6) returns(6) {
     0x2000 // l memory location
     mload 
     0x2200 // a memory location
@@ -277,86 +275,49 @@
 
    // INPUT STACK => [T_im,T_real,Phi_t_im,Phi_t_re,n,k]
    LOOP_last:
-    0x2200 
-    mload
-    dup7
-    add                            // [a+k=b,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    dup1                           // [b,b,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x40
-    mul
-    mload                          // [Re(b),b,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x2200 mload                    // [a,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    dup7                            // [k,a,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    add                             // [a+k=b,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    dup1                            // [b,b,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x40 mul mload                  // [Re(b),b,T_im,T_real,Phi_t_im,Phi_t_re,n,k]       
+    swap1                           // [b,Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x40 mul 0x20 add mload         // [Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x2200 mload                    // [a,Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    dup1                            // [a,a,Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x40 mul mload                  // [Re(a),a,Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k] 
+    swap1                           // [a,Re(a),Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k] 
+    0x40 mul 0x20 add mload         // [Im(a),Re(a),Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    swap3                           // [Re(b),Re(a),Im(b),Im(a),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    swap2 swap3 swap2 swap1         // [Re(a),Re(b),Im(a),Im(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    dup4 dup4 dup4 dup4
+    ADD_Z()                         // [t_real',t_im',Re(a),Re(b),Im(a),Im(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x2200 mload
+    0x40 mul
+    mstore
+    0x2200 mload
+    0x40 mul 0x20 add 
+    mstore                          // [Re(a),Re(b),Im(a),Im(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]                   
+    SUB_Z() swap1                   // [t_im,t_real,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    dup3 swap2                      // [t_real,t_im,T_im,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    dup5 swap1                      // [t_real,T_real,t_im,T_im,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    // swap3                           // [T_real,t_real,T_im,t_im,Phi_t_im,Phi_t_re,n,k]
+    MUL_Z()                         // [re,im,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    SCALE_DOWN()
     swap1
-    0x40
-    mul
-    0x20
-    add
-    mload                          // [Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x2200
-    mload 
-    dup1                           // [a,a,Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x40
-    mul
-    mload                          // [Re(a),a,Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k] 
+    SCALE_DOWN()
     swap1
-    0x40
-    mul
-    0x20
-    add 
-    mload                          // [Im(a),Re(a),Im(b),Re(b),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    swap3                          // [Re(b),Re(a),Im(b),Im(a),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    dup4
-    dup4
-    dup4
-    dup4
-    SUB_Z()                        // [t_real,t_im,Re(b),Re(a),Im(b),Im(a),T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x2400
-    mstore
-    0x2600
-    mstore
-    ADD_Z()                        // [t_real',t_im',T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x2000
-    mload
-    0x40
-    mul
-    mstore
-    0x2000
-    mload
-    0x40
-    mul
-    0x20
-    add 
-    mload                          // [T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x2400
-    mload
-    0x2600
-    mstore                         // [t_im,t_real,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    MUL_Z()                        // [re,im,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x2200
-    mload
-    dup9
-    add 
-    0x40
-    mul 
-    mload
-    0x2200
-    mload
-    dup9
-    add
-    0x40
-    mul
-    0x20
-    add 
-    mload                           // [T_im,T_real,Phi_t_im,Phi_t_re,n,k]
-    0x2200 
-    mload
-    0x01 
-    add 
-    dup1
-    0x2200
-    mstore
-    [N]
+    0x2200 mload                    // [a,re,im,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    dup9 add                        // [b,re,im,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    swap1 dup2                      // [b,re,b,im,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x40 mul mstore                 // [b,im,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x40 mul 0x20 add mstore        // [T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x2200 mload                    // [a,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    dup6                            // [n,a,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    add                             // [a+n,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    dup1                            // [a+n,a+n,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
+    0x2200 mstore
+    N()                             // [N,a+n,T_im,T_real,Phi_t_im,Phi_t_re,n,k]
     gt
     LOOP_last
-    jumpi
-    
+    jumpi 
 }

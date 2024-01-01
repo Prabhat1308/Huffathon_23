@@ -121,9 +121,9 @@
     __tablestart(SIN_LUT) // [sin_table_start, offset1_2, is_odd_quadrant, is_negative_quadrant, interp, angle]
     add                   // [sin_table_start + offset1_2, is_odd_quadrant, is_negative_quadrant, interp, angle]
     0x20 swap1            // [sin_table_start + offset1_2, 0x20, is_odd_quadrant, is_negative_quadrant, interp, angle]
-    0x00 codecopy         // [is_odd_quadrant, is_negative_quadrant, interp, angle]
+    0x3000 codecopy         // [is_odd_quadrant, is_negative_quadrant, interp, angle]
 
-    0x00 mload            // [x1_2, is_odd_quadrant, is_negative_quadrant, interp, angle]
+    0x3000 mload            // [x1_2, is_odd_quadrant, is_negative_quadrant, interp, angle]
 
     // We now read the last two numbers of size entry_bytes from x1_2
     // in example: entry_bytes = 4; x1_2 = 0x00...12345678abcdefgh

@@ -6,7 +6,8 @@ auto_detect_solc = false
 optimizer = true
 optimizer_runs = 200 # Default amount
 ffi = true
-fuzz_runs = 1_000
+[fuzz]
+runs = 100000
 remappings = [
   "forge-std=lib/forge-std/src/",
   "foundry-huff=lib/foundry-huff/src/",

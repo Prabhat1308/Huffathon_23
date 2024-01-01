@@ -391,11 +391,7 @@ library PRBMath {
     /// @param y The multiplier as an uint256.
     /// @param denominator The divisor as an uint256.
     /// @return result The result as an uint256.
-    function mulDiv(
-        uint256 x,
-        uint256 y,
-        uint256 denominator
-    ) internal pure returns (uint256 result) {
+    function mulDiv(uint256 x, uint256 y, uint256 denominator) internal pure returns (uint256 result) {
         // 512-bit multiply [prod1 prod0] = x * y. Compute the product mod 2^256 and mod 2^256 - 1, then use
         // use the Chinese Remainder Theorem to reconstruct the 512 bit result. The result is stored in two 256
         // variables such that product = prod1 * 2^256 + prod0.
@@ -495,10 +491,7 @@ library PRBMath {
     /// @param x The multiplicand as an unsigned 60.18-decimal fixed-point number.
     /// @param y The multiplier as an unsigned 60.18-decimal fixed-point number.
     /// @return result The result as an unsigned 60.18-decimal fixed-point number.
-    function mulDivFixedPoint(
-        uint256 x,
-        uint256 y
-    ) internal pure returns (uint256 result) {
+    function mulDivFixedPoint(uint256 x, uint256 y) internal pure returns (uint256 result) {
         uint256 prod0;
         uint256 prod1;
         assembly {
@@ -526,19 +519,17 @@ library PRBMath {
         }
 
         assembly {
-            result := add(
-                mul(
-                    or(
-                        div(sub(prod0, remainder), SCALE_LPOTD),
-                        mul(
-                            sub(prod1, gt(remainder, prod0)),
-                            add(div(sub(0, SCALE_LPOTD), SCALE_LPOTD), 1)
-                        )
+            result :=
+                add(
+                    mul(
+                        or(
+                            div(sub(prod0, remainder), SCALE_LPOTD),
+                            mul(sub(prod1, gt(remainder, prod0)), add(div(sub(0, SCALE_LPOTD), SCALE_LPOTD), 1))
+                        ),
+                        SCALE_INVERSE
                     ),
-                    SCALE_INVERSE
-                ),
-                roundUpUnit
-            )
+                    roundUpUnit
+                )
         }
     }
 
@@ -554,16 +545,8 @@ library PRBMath {
     /// @param y The multiplier as an int256.
     /// @param denominator The divisor as an int256.
     /// @return result The result as an int256.
-    function mulDivSigned(
-        int256 x,
-        int256 y,
-        int256 denominator
-    ) internal pure returns (int256 result) {
-        if (
-            x == type(int256).min ||
-            y == type(int256).min ||
-            denominator == type(int256).min
-        ) {
+    function mulDivSigned(int256 x, int256 y, int256 denominator) internal pure returns (int256 result) {
+        if (x == type(int256).min || y == type(int256).min || denominator == type(int256).min) {
             revert PRBMath__MulDivSignedInputTooSmall();
         }
 

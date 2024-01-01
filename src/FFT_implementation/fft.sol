@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
+
 import "./trig.sol";
 
 contract FFT {
@@ -10,6 +11,11 @@ contract FFT {
 
     uint256 PI = 3141592653589793238; // PI * 1e18
 
+    struct complex {
+        int256 real;
+        int256 img;
+    }
+
     function Log2(uint256 len) public pure returns (uint256) {
         uint256 log_val = 0;
         while (len != 1) {
@@ -19,47 +25,42 @@ contract FFT {
         return log_val;
     }
 
-    function fft(
-        int[4] memory real_part,
-        int[4] memory complex_part
-    ) public view returns (int[4] memory, int[4] memory) {
+    function fft(int256[] memory real_part, int256[] memory complex_part)
+        public
+        view
+        returns (int256[] memory, int256[] memory)
+    {
         uint256 N = real_part.length;
         uint256 k = N;
         uint256 n;
         uint256 thetaT = (PI / N);
-        int256 phiT_real = Trigonometry.cos(thetaT);
-        int256 phiT_img = -Trigonometry.sin(thetaT);
-        int256 T_real;
-        int256 T_img;
+        complex memory phiT = complex(Trigonometry.cos(thetaT), -Trigonometry.sin(thetaT));
+
+        complex memory T;
         while (k > 1) {
             n = k;
             k >>= 1;
-            int256 phiT_real__temp = phiT_real;
-            phiT_real = (((phiT_real * phiT_real) / 1e18) -
-                ((phiT_img * phiT_img) / 1e18));
-            phiT_img = (2 * phiT_img * phiT_real__temp) / 1e18;
-            if (k == 2) require(phiT_real / 1e12 == 0);
-            T_real = 1 * 1e18;
-            T_img = 0 * 1e18;
+            int256 phiT_real__temp = phiT.real;
+            phiT.real = (((phiT.real * phiT.real) / 1e18) - ((phiT.img * phiT.img) / 1e18));
+            phiT.img = (2 * phiT.img * phiT_real__temp) / 1e18;
+            // if (k == 2) require(phiT.real / 1e12 == 0);
+            T.real = 1 * 1e18;
+            T.img = 0 * 1e18;
             for (uint256 l = 0; l < k; l++) {
                 for (uint256 a = l; a < N; a += n) {
                     uint256 b = a + k;
-                    int256 t_real;
-                    int256 t_img;
-                    t_real = real_part[a] - real_part[b];
-                    t_img = complex_part[a] - complex_part[b];
+
+                    complex memory t;
+                    t.real = real_part[a] - real_part[b];
+                    t.img = complex_part[a] - complex_part[b];
                     real_part[a] = real_part[a] + real_part[b];
                     complex_part[a] = complex_part[a] + complex_part[b];
-                    real_part[b] = (((T_real * t_real) / 1e18) -
-                        ((T_img * t_img) / 1e18));
-                    complex_part[b] = (((T_real * t_img) / 1e18) +
-                        ((T_img * t_real) / 1e18));
+                    real_part[b] = (((T.real * t.real) / 1e18) - ((T.img * t.img) / 1e18));
+                    complex_part[b] = (((T.real * t.img) / 1e18) + ((T.img * t.real) / 1e18));
                 }
-                int256 T_real_temp = T_real;
-                T_real = (((T_real * phiT_real) / 1e18) -
-                    ((T_img * phiT_img) / 1e18));
-                T_img = (((T_real_temp * phiT_img) / 1e18) +
-                    ((T_img * phiT_real) / 1e18));
+                int256 T_real_temp = T.real;
+                T.real = (((T.real * phiT.real) / 1e18) - ((T.img * phiT.img) / 1e18));
+                T.img = (((T_real_temp * phiT.img) / 1e18) + ((T.img * phiT.real) / 1e18));
             }
         }
 
